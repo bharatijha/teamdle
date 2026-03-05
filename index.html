@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEAMDLE — Provenir India Meetup</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b1222;--nav:#101b2e;--nav2:#162038;--bdr:#1e2d4a;--teal:#00c7b1;--teal-dim:#009e8e;--teal-gl:rgba(0,199,177,.15);--wht:#f0f4f8;--gray:#7a8ba8;--lt:#c4d1e0;--correct:#00c7b1;--present:#f0b429;--absent:#1e2d4a;--gold:#f0b429;--silver:#94a3b8;--bronze:#d97706;--blue:#3b82f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--wht);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+.hidden{display:none!important}
+
+header{text-align:center;padding:24px 20px 10px}
+.pv-logo{height:48px;margin-bottom:10px;border-radius:10px}
+.logo{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;letter-spacing:8px;color:var(--teal)}
+header .sub{font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;letter-spacing:1.5px;margin-top:4px}
+.hdr-line{width:50px;height:2px;background:linear-gradient(90deg,transparent,var(--teal),transparent);margin:10px auto 0}
+
+/* Login */
+#loginScreen{width:100%;max-width:440px;padding:0 20px;margin-top:16px;animation:fadeSlide .5s ease}
+.login-card{background:var(--nav);border:1px solid var(--bdr);border-radius:16px;padding:32px 24px;text-align:center;position:relative;overflow:hidden}
+.login-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--teal),var(--blue),transparent)}
+.login-card .li{font-size:40px;margin-bottom:10px}
+.login-card h2{font-size:18px;font-weight:700;margin-bottom:6px}
+.login-card .ls{font-size:12px;color:var(--gray);margin-bottom:24px;line-height:1.6}
+.fl{display:block;text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gray);margin-bottom:8px}
+.ti{width:100%;padding:13px 16px;background:var(--nav2);border:2px solid var(--bdr);border-radius:10px;color:var(--wht);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;outline:none;transition:border-color .2s;text-align:center}
+.ti:focus{border-color:var(--teal)}.ti::placeholder{color:var(--gray);font-weight:400}
+.pw{text-align:left;font-weight:400;letter-spacing:normal}
+.mb{margin-bottom:14px}
+.btn{width:100%;padding:13px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;border:none;border-radius:10px;cursor:pointer;transition:all .2s;background:var(--bdr);color:var(--gray);pointer-events:none;margin-top:16px}
+.btn.ready{background:var(--teal);color:var(--bg);pointer-events:all;box-shadow:0 4px 20px var(--teal-gl)}
+.btn.ready:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(0,199,177,.35)}
+.err{color:#ef4444;font-size:12px;margin-top:10px;display:none;animation:fadeSlide .3s ease}
+.err.show{display:block}
+.hint{margin-top:14px;font-size:10px;color:var(--gray);font-family:'Space Mono',monospace;line-height:1.6}
+.ltog{margin-top:16px;padding-top:14px;border-top:1px solid var(--bdr)}
+.ltog button{background:none;border:none;color:var(--teal-dim);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;opacity:.7;transition:opacity .2s}
+.ltog button:hover{opacity:1}
+
+/* Waiting */
+#waitScreen{width:100%;max-width:480px;padding:0 20px;margin-top:20px;animation:fadeSlide .5s ease;text-align:center}
+.wait-card{background:var(--nav);border:1px solid var(--bdr);border-radius:16px;padding:40px 28px}
+.wait-card .wi{font-size:48px;margin-bottom:12px}
+.wait-card h2{font-size:18px;margin-bottom:8px}
+.wait-card p{font-size:13px;color:var(--gray);line-height:1.6}
+.wait-card .team-tag{display:inline-block;margin-top:16px;padding:6px 16px;background:var(--teal-gl);border:1px solid rgba(0,199,177,.25);border-radius:8px;font-family:'Space Mono',monospace;font-size:12px;color:var(--teal)}
+@keyframes waitPulse{0%,100%{opacity:.4}50%{opacity:1}}
+.wait-dots{color:var(--teal);font-size:24px;letter-spacing:4px;margin-top:20px;animation:waitPulse 1.5s ease-in-out infinite}
+
+/* Game */
+#gameScreen{width:100%;max-width:560px;padding:0 20px;animation:fadeSlide .5s ease}
+.pbar{display:flex;align-items:center;justify-content:space-between;padding:10px 0 6px;border-bottom:1px solid var(--bdr);margin-bottom:4px}
+.pbar .pl{display:flex;align-items:center;gap:10px}
+.pbar .pe{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--teal-gl);border:1px solid rgba(0,199,177,.2)}
+.pbar .pn{font-weight:700;font-size:14px}
+.pbar .qbadge{font-family:'Space Mono',monospace;font-size:10px;padding:4px 10px;background:var(--nav2);border:1px solid var(--bdr);border-radius:6px;color:var(--teal)}
+.sbar{display:flex;gap:20px;justify-content:center;margin:12px 0 16px;font-family:'Space Mono',monospace;font-size:12px}
+.st{text-align:center}.st .nm{font-size:20px;font-weight:700;color:var(--teal)}.st .lb{color:var(--gray);font-size:9px;letter-spacing:1px;text-transform:uppercase}
+.qcard{background:var(--nav);border:1px solid var(--bdr);border-radius:14px;padding:22px;margin-bottom:18px;text-align:center;animation:fadeSlide .4s ease}
+.qn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:10px}
+.qt{font-size:17px;font-weight:600;line-height:1.5;margin-bottom:6px}
+.qh{font-size:11px;color:var(--gray);font-family:'Space Mono',monospace}
+
+/* Wordle */
+.wgrid{display:flex;flex-direction:column;align-items:center;gap:6px;margin-bottom:18px}
+.wrow{display:flex;gap:6px}
+.wc{width:50px;height:50px;border:2px solid var(--bdr);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:21px;font-weight:700;text-transform:uppercase;transition:all .15s;background:transparent}
+.wc.filled{border-color:var(--gray);animation:popIn .1s ease}
+.wc.correct{background:var(--correct);border-color:var(--correct);color:var(--bg);animation:flipIn .4s ease}
+.wc.present{background:var(--present);border-color:var(--present);color:var(--bg);animation:flipIn .4s ease}
+.wc.absent{background:var(--absent);border-color:var(--absent);color:var(--gray);animation:flipIn .4s ease}
+@keyframes fadeSlide{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
+@keyframes flipIn{0%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
+@keyframes shakeRow{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.wrow.shake{animation:shakeRow .4s ease}
+.kb{display:flex;flex-direction:column;align-items:center;gap:5px;margin-bottom:24px}
+.kr{display:flex;gap:4px}
+.key{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;min-width:34px;height:46px;border:none;border-radius:6px;background:var(--nav2);color:var(--lt);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.key:hover{background:var(--bdr)}.key.wide{min-width:60px;font-size:11px}
+.key.correct{background:var(--correct);color:var(--bg)}.key.present{background:var(--present);color:var(--bg)}.key.absent{background:#0d1525;color:#3a4a65}
+
+/* MCQ */
+.mcq-opts{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.mcq-btn{font-family:'DM Sans',sans-serif;font-size:14px;text-align:left;padding:14px 16px;background:var(--nav);border:1px solid var(--bdr);border-radius:10px;color:var(--wht);cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:12px}
+.mcq-btn:hover:not(.locked){border-color:var(--teal);background:var(--nav2)}
+.mcq-btn .ml{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;background:var(--nav2);border:1px solid var(--bdr);flex-shrink:0}
+.mcq-btn.correct-pick{border-color:var(--correct);background:rgba(0,199,177,.08)}
+.mcq-btn.correct-pick .ml{background:var(--correct);color:var(--bg);border-color:var(--correct)}
+.mcq-btn.wrong-pick{border-color:#ef4444;background:rgba(239,68,68,.08)}
+.mcq-btn.wrong-pick .ml{background:#ef4444;color:#fff;border-color:#ef4444}
+.mcq-btn.reveal-correct{border-color:var(--correct)}
+.mcq-btn.reveal-correct .ml{background:var(--correct);color:var(--bg);border-color:var(--correct)}
+
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--wht);color:var(--bg);font-weight:700;font-size:13px;padding:10px 22px;border-radius:8px;z-index:200;animation:toastIn .3s ease,toastOut .3s ease 1s forwards;pointer-events:none}
+@keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(-10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+@keyframes toastOut{from{opacity:1}to{opacity:0}}
+.msg{text-align:center;padding:10px;font-weight:600;font-size:13px;border-radius:8px;margin-bottom:14px;animation:fadeSlide .3s ease;display:none}
+.msg.show{display:block}
+.msg.win{background:rgba(0,199,177,.12);color:var(--teal);border:1px solid rgba(0,199,177,.25)}
+.msg.lose{background:rgba(239,68,68,.12);color:#ef4444;border:1px solid rgba(239,68,68,.25)}
+.nbtn{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:11px 28px;border:none;border-radius:10px;background:var(--teal);color:var(--bg);cursor:pointer;margin:0 auto 24px;display:none;transition:all .2s}
+.nbtn:hover{transform:translateY(-2px);box-shadow:0 4px 16px var(--teal-gl)}
+.nbtn.show{display:block}
+.end{text-align:center;padding:36px 20px;animation:fadeSlide .5s ease;display:none}
+.end.show{display:block}
+.end .trophy{font-size:56px;margin-bottom:14px}
+.end h2{font-size:22px;margin-bottom:6px}
+.end .fs{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;color:var(--teal)}
+.end .fl2{color:var(--gray);font-size:12px;margin-bottom:6px}
+.end .et{font-size:13px;color:var(--gray);margin-bottom:20px;font-family:'Space Mono',monospace}
+.end p{color:var(--gray);font-size:12px;line-height:1.6}
+
+/* Admin */
+#adminScreen{width:100%;max-width:640px;padding:0 20px;animation:fadeSlide .5s ease}
+.ah{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--bdr);margin-bottom:18px}
+.ah h2{font-size:16px;display:flex;align-items:center;gap:8px}
+.abadge{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:3px 10px;background:rgba(0,199,177,.1);color:var(--teal);border:1px solid rgba(0,199,177,.25);border-radius:4px}
+.abtn{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;padding:7px 14px;border-radius:8px;cursor:pointer;transition:all .2s;border:1px solid var(--bdr);background:var(--nav2);color:var(--gray)}
+.abtn:hover{border-color:var(--teal);color:var(--lt)}
+.abtn.danger{border-color:rgba(239,68,68,.25);color:#ef4444}
+.abtn.danger:hover{background:rgba(239,68,68,.1);border-color:#ef4444}
+.abtns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.quiz-sel{background:var(--nav);border:1px solid var(--bdr);border-radius:12px;padding:18px;margin-bottom:18px}
+.quiz-sel h3{font-size:13px;margin-bottom:14px;font-family:'Space Mono',monospace;letter-spacing:1px;color:var(--teal)}
+.quiz-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quiz-card{background:var(--nav2);border:2px solid var(--bdr);border-radius:10px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
+.quiz-card:hover{border-color:var(--teal)}
+.quiz-card.active{border-color:var(--teal);background:rgba(0,199,177,.06);box-shadow:0 0 16px var(--teal-gl)}
+.quiz-card.active::after{content:'LIVE';position:absolute;top:8px;right:8px;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;padding:2px 8px;background:var(--teal);color:var(--bg);border-radius:4px;font-weight:700}
+.quiz-card .qc-type{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:6px}
+.quiz-card .qc-type.mcq{color:var(--blue)}
+.quiz-card .qc-type.wordle{color:var(--present)}
+.quiz-card .qc-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.quiz-card .qc-info{font-size:11px;color:var(--gray)}
+.astat{background:var(--nav);border:1px solid var(--bdr);border-radius:12px;padding:16px;margin-bottom:18px}
+.astat h3{font-size:13px;margin-bottom:10px;font-family:'Space Mono',monospace;letter-spacing:1px;color:var(--teal)}
+.asgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.asc{background:var(--nav2);border:1px solid var(--bdr);border-radius:8px;padding:12px;text-align:center}
+.asc .n{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--teal)}
+.asc .l{font-size:9px;color:var(--gray);letter-spacing:1px;text-transform:uppercase;font-family:'Space Mono',monospace}
+.lbs{background:var(--nav);border:1px solid var(--bdr);border-radius:12px;overflow:hidden;margin-bottom:18px}
+.lbs-h{padding:14px 18px;border-bottom:1px solid var(--bdr);font-family:'Space Mono',monospace;font-size:12px;font-weight:700;display:flex;align-items:center;gap:8px;color:var(--gold)}
+.lbb{padding:10px 14px;max-height:44vh;overflow-y:auto}
+.lr{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;margin-bottom:5px;background:var(--nav2);border:1px solid transparent}
+.lr.top1{border-color:var(--gold);background:rgba(240,180,41,.05)}
+.lrk{font-family:'Space Mono',monospace;font-weight:700;font-size:15px;width:30px;text-align:center;flex-shrink:0}
+.lrk.gold{color:var(--gold)}.lrk.silver{color:var(--silver)}.lrk.bronze{color:var(--bronze)}
+.lri{flex:1;min-width:0}
+.lrn{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lrm{font-size:10px;color:var(--gray);font-family:'Space Mono',monospace}
+.lrs{font-family:'Space Mono',monospace;font-weight:700;font-size:18px;color:var(--teal);flex-shrink:0}
+.lrs .lrp{font-size:9px;font-weight:400;color:var(--gray)}
+.lbe{text-align:center;padding:28px 0;color:var(--gray);font-size:13px}
+
+@media(max-width:500px){
+.wc{width:43px;height:43px;font-size:17px}
+.key{min-width:27px;height:42px;font-size:11px}.key.wide{min-width:48px;font-size:9px}
+.quiz-grid{grid-template-columns:1fr}.asgrid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <img src="data:image/jpeg;base64,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" alt="Provenir" class="pv-logo">
+  <div class="logo">TEAMDLE</div>
+  <div class="sub">India Wide Meetup — Bangalore 2026</div>
+  <div class="hdr-line"></div>
+</header>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div id="teamLoginView">
+      <div class="li">👥</div>
+      <h2>Enter Your Team Name</h2>
+      <div class="ls">Cross-functional teams compete head-to-head.<br>One login per team — make it count!</div>
+      <label class="fl">Team Name</label>
+      <input type="text" class="ti mb" id="teamNameInput" placeholder="e.g. Mavericks, Team Alpha" maxlength="30" autocomplete="off" />
+      <button class="btn" id="teamLoginBtn">Let's Go →</button>
+      <div class="err" id="teamError"></div>
+      <div class="hint">💡 Each team gets exactly ONE attempt per quiz.</div>
+      <div class="ltog"><button id="showAdmin">🔒 Sysadmin</button></div>
+    </div>
+    <div id="adminLoginView" class="hidden">
+      <div class="li">🔐</div>
+      <h2>Sysadmin Access</h2>
+      <div class="ls">Manage quizzes, view leaderboard, control the game.</div>
+      <label class="fl">Email</label>
+      <input type="email" class="ti mb" id="adminEmail" placeholder="admin@provenir.com" autocomplete="off" />
+      <label class="fl">Password</label>
+      <input type="password" class="ti pw mb" id="adminPwd" placeholder="••••••••" autocomplete="off" />
+      <button class="btn" id="adminLoginBtn">Login as Admin →</button>
+      <div class="err" id="adminError"></div>
+      <div class="ltog"><button id="showTeam">← Back to Team Login</button></div>
+    </div>
+  </div>
+</div>
+
+<!-- WAITING -->
+<div id="waitScreen" class="hidden">
+  <div class="wait-card">
+    <div class="wi">⏳</div>
+    <h2 id="waitTitle">Hang Tight!</h2>
+    <p id="waitMsg">No quiz is active right now.<br>The host will start the next round shortly.</p>
+    <div class="team-tag" id="waitTeam">Team Name</div>
+    <div class="wait-dots">• • •</div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="gameScreen" class="hidden">
+  <div class="pbar">
+    <div class="pl"><div class="pe">👥</div><div class="pn" id="pbName">Team</div></div>
+    <div class="qbadge" id="qBadge">Quiz 1 — MCQ</div>
+  </div>
+  <div class="sbar">
+    <div class="st"><div class="nm" id="score">0</div><div class="lb">Score</div></div>
+    <div class="st"><div class="nm" id="streak">0</div><div class="lb">Streak</div></div>
+    <div class="st"><div class="nm" id="qcount">1/10</div><div class="lb">Round</div></div>
+  </div>
+  <div class="qcard" id="questionCard">
+    <div class="qn" id="qNumber">Round 1</div>
+    <div class="qt" id="qText">Loading...</div>
+    <div class="qh" id="qHint"></div>
+  </div>
+  <div id="mcqMode" class="hidden">
+    <div class="mcq-opts" id="mcqOpts"></div>
+    <div class="msg" id="mcqMsg"></div>
+  </div>
+  <div id="wordleMode" class="hidden">
+    <div class="wgrid" id="wordleGrid"></div>
+    <div class="msg" id="wordleMsg"></div>
+    <div class="kb" id="keyboard">
+      <div class="kr"><button class="key">Q</button><button class="key">W</button><button class="key">E</button><button class="key">R</button><button class="key">T</button><button class="key">Y</button><button class="key">U</button><button class="key">I</button><button class="key">O</button><button class="key">P</button></div>
+      <div class="kr"><button class="key">A</button><button class="key">S</button><button class="key">D</button><button class="key">F</button><button class="key">G</button><button class="key">H</button><button class="key">J</button><button class="key">K</button><button class="key">L</button></div>
+      <div class="kr"><button class="key wide">Enter</button><button class="key">Z</button><button class="key">X</button><button class="key">C</button><button class="key">V</button><button class="key">B</button><button class="key">N</button><button class="key">M</button><button class="key wide">⌫</button></div>
+    </div>
+  </div>
+  <button class="nbtn" id="nextBtn">Next Round →</button>
+  <div class="end" id="endScreen">
+    <div class="trophy">🏆</div>
+    <h2 id="endTitle">Quiz Complete!</h2>
+    <div class="fs" id="finalScore">0</div>
+    <div class="fl2">points earned</div>
+    <div class="et" id="endTeam"></div>
+    <p>Your score has been submitted.<br>Wait for the host to start the next round!</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen" class="hidden">
+  <div class="ah">
+    <h2>🛡️ Control Panel <span class="abadge">Sysadmin</span></h2>
+    <button class="abtn" id="adminLogout">Logout</button>
+  </div>
+  <div class="quiz-sel">
+    <h3>🎮 Quiz Selector — Click to Activate</h3>
+    <div class="quiz-grid" id="quizGrid">
+      <div class="quiz-card" data-quiz="0"><div class="qc-type mcq">MCQ</div><div class="qc-name">Quiz 1</div><div class="qc-info">10 questions • Multiple Choice</div></div>
+      <div class="quiz-card" data-quiz="1"><div class="qc-type wordle">WORDLE</div><div class="qc-name">Quiz 2</div><div class="qc-info">10 questions • 5-Letter Words</div></div>
+      <div class="quiz-card" data-quiz="2"><div class="qc-type mcq">MCQ</div><div class="qc-name">Quiz 3</div><div class="qc-info">10 questions • Multiple Choice</div></div>
+      <div class="quiz-card" data-quiz="3"><div class="qc-type wordle">WORDLE</div><div class="qc-name">Quiz 4</div><div class="qc-info">10 questions • 5-Letter Words</div></div>
+    </div>
+  </div>
+  <div class="abtns">
+    <button class="abtn" id="adminRefresh">🔄 Refresh</button>
+    <button class="abtn danger" id="adminDeactivate">⏸ Deactivate Quiz</button>
+    <button class="abtn danger" id="adminResetScores">🗑️ Reset Scores</button>
+    <button class="abtn danger" id="adminResetLocks">🔓 Reset Team Locks</button>
+    <button class="abtn danger" id="adminFullReset">💣 Full Reset</button>
+  </div>
+  <div class="astat">
+    <h3 id="adminStatTitle">📊 No Quiz Active</h3>
+    <div class="asgrid">
+      <div class="asc"><div class="n" id="aPlayed">0</div><div class="l">Teams Played</div></div>
+      <div class="asc"><div class="n" id="aTop">0</div><div class="l">Top Score</div></div>
+      <div class="asc"><div class="n" id="aAvg">0</div><div class="l">Avg Score</div></div>
+    </div>
+  </div>
+  <div class="lbs">
+    <div class="lbs-h">🏆 Leaderboard <span id="lbQuizLabel" style="font-weight:400;color:var(--gray);margin-left:8px">—</span></div>
+    <div class="lbb" id="adminLb"><div class="lbe">No scores yet.</div></div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// Firebase Config
+firebase.initializeApp({
+  apiKey: "AIzaSyAwTfCBWGzMG2aGqGj3ZhI0hzHSc1k6b4Q",
+  authDomain: "teamdle.firebaseapp.com",
+  databaseURL: "https://teamdle-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "teamdle",
+  storageBucket: "teamdle.firebasestorage.app",
+  messagingSenderId: "635698562975",
+  appId: "1:635698562975:web:9990a882e3032546d99faa"
+});
+const db = firebase.database();
+
+// =============================================
+// QUIZZES
+// =============================================
+const QUIZZES = [
+  {
+    name: "Quiz 1", type: "mcq",
+    questions: [
+      {q:"A customer's environment is down. Who does CS escalate to FIRST?",opts:["Engineering","DevOps","Professional Services","Analytics"],ans:1,explain:"Environment issues go to DevOps first."},
+      {q:"After PS completes go-live, who receives the handover package?",opts:["Sales","QA","Customer Support","Engineering"],ans:2,explain:"CS takes over BAU after PS hands off."},
+      {q:"A bug is reproducible across ALL environments. What type of issue is this?",opts:["Environment Issue","Config Issue","Engineering Issue","Documentation Issue"],ans:2,explain:"Reproducible everywhere = code-level bug."},
+      {q:"Who provides usage data to help Marketing identify customers for case studies?",opts:["Sales","Analytics","HR","DevOps"],ans:1,explain:"Analytics surfaces insights to Marketing."},
+      {q:"During onboarding, who creates customer-specific admin guides?",opts:["QA","Engineering","Documentation","IT"],ans:2,explain:"Documentation team creates runbooks and guides."},
+      {q:"Which team helps isolate root cause with usage data when perf degrades?",opts:["HR","Sales","Analytics","Payroll"],ans:2,explain:"Analytics provides data to isolate the cause."},
+      {q:"In the escalation ladder, what comes after L2 Support?",opts:["War Room","Engineering (L3)","Sales Escalation","Exec Review"],ans:1,explain:"L2 escalates to Engineering (L3)."},
+      {q:"Which team provisions internal tools, VPN, and SSO?",opts:["DevOps","IT","HR","Engineering"],ans:1,explain:"IT handles internal tooling and access."},
+      {q:"Config leads to unexpected behavior. Who investigates first?",opts:["Engineering","DevOps","Professional Services","QA"],ans:2,explain:"Config issues go to PS first."},
+      {q:"What triggers the handoff from Sales to DevOps for a new customer?",opts:["Email from CEO","Slack message","A provisioning ticket","Phone call"],ans:2,explain:"Sales raises a formal provisioning ticket."},
+    ]
+  },
+  {
+    name: "Quiz 2", type: "wordle",
+    questions: [
+      {answer:"SMOKE",question:"What type of test does QA run on a newly provisioned environment?"},
+      {answer:"CHURN",question:"Analytics monitors health scores to predict and prevent customer ___."},
+      {answer:"PATCH",question:"A small code fix deployed to production to resolve a specific bug."},
+      {answer:"SCRUM",question:"The agile framework many engineering teams follow for sprints."},
+      {answer:"QUERY",question:"A request for data from a database — often the culprit behind slow pages."},
+      {answer:"STAGE",question:"The pre-production environment where QA validates fixes before release."},
+      {answer:"ALERT",question:"DevOps sets these up to get notified when something goes wrong in prod."},
+      {answer:"SCALE",question:"When traffic spikes, DevOps needs to ___ the infrastructure."},
+      {answer:"AUDIT",question:"A formal review of processes, configs, or compliance — often before go-live."},
+      {answer:"SCOPE",question:"PS defines this at the start of implementation — what's in and what's out."},
+    ]
+  },
+  {
+    name: "Quiz 3", type: "mcq",
+    questions: [
+      {q:"What does SLA stand for?",opts:["Service Level Agreement","System Log Analysis","Standard Licensing Approval","Service Lifecycle Audit"],ans:0,explain:"SLA = Service Level Agreement."},
+      {q:"Who owns the customer relationship post go-live?",opts:["Sales","PS","Customer Support","Engineering"],ans:2,explain:"CS owns BAU relationship after go-live."},
+      {q:"What is a runbook?",opts:["A sprint tracking doc","Step-by-step operational guide","A customer contract","A code repository"],ans:1,explain:"Runbooks are step-by-step operational guides."},
+      {q:"Which team handles DNS and SSL setup for new environments?",opts:["QA","Engineering","DevOps","Documentation"],ans:2,explain:"DevOps handles infra setup including DNS/SSL."},
+      {q:"UAT stands for?",opts:["Universal Access Test","User Acceptance Testing","Unified Audit Trail","Upstream API Trigger"],ans:1,explain:"UAT = User Acceptance Testing."},
+      {q:"Who validates fixes in staging before deployment?",opts:["Sales","QA","HR","Marketing"],ans:1,explain:"QA validates fixes in staging."},
+      {q:"What triggers a War Room?",opts:["New feature request","Critical production outage","Quarterly review","New hire onboarding"],ans:1,explain:"War Rooms are triggered by critical outages."},
+      {q:"Customer health scores are maintained by which team?",opts:["Payroll","IT","Analytics","Documentation"],ans:2,explain:"Analytics maintains health scores."},
+      {q:"What is the purpose of a handover package?",opts:["To bill the customer","To transfer context between teams","To terminate a contract","To request new hardware"],ans:1,explain:"Handover packages transfer context between teams."},
+      {q:"Regional Marketing works with CS to create what?",opts:["Code reviews","Case studies","Sprint plans","Database schemas"],ans:1,explain:"Marketing works with CS on case studies."},
+    ]
+  },
+  {
+    name: "Quiz 4", type: "wordle",
+    questions: [
+      {answer:"DEBUG",question:"The process of finding and fixing errors in code."},
+      {answer:"PROXY",question:"An intermediary server that forwards requests between client and server."},
+      {answer:"TOKEN",question:"A piece of data used for authentication or authorization."},
+      {answer:"CACHE",question:"Temporary storage that speeds up data retrieval."},
+      {answer:"QUEUE",question:"A data structure where items are processed in order — first in, first out."},
+      {answer:"CLONE",question:"To create an exact copy of a repository or environment."},
+      {answer:"MERGE",question:"Combining changes from one branch into another."},
+      {answer:"DRAIN",question:"Gradually removing traffic from a server before maintenance."},
+      {answer:"FLEET",question:"A group of servers or instances managed together."},
+      {answer:"MOUNT",question:"Attaching a filesystem or volume so the OS can access it."},
+    ]
+  }
+];
+
+// Dictionary
+const DICT_CONCAT = "ABACAABACKABADAABAFTABANDABASEABASHABATEABBEYABBOTABDALABEAMABEARABELEABERRABHALABHORABIDEABIESABIMEABLENABLERABLETABNETABODEABOMAABOONABORDABORTABOUTABOVEABRAYABSISABUJAABUNAABUSEABUZZABYMEABYSMABYSSACCOYACCRAACERBACKEEACOCKACOLDACORNACREDACRIDACTONACTORACUTEADACTADAGEADAPAADAPTADAYSADDAXADDEDADDERADDLEADEEMADEPSADEPTADIEUADIOSADMITADMIXADOBEADOBOADOORADOPTADOREADORNADOWNADRADADRIPADULTADUNCADUREADUSTADVILAEGISAERIEAESIRAFFIXAFIREAFLATAFLOWAFOAMAFOOTAFOREAFOULAFRICAFRITAFTERAGAINAGAMAAGAMIAGAPEAGASPAGASTAGATEAGATYAGAVEAGAZEAGENDAGENTAGGERAGGRIAGGROAGGRYAGILEAGINGAGISMAGISTAGLETAGLEYAGLOWAGNUSAGONEAGONYAGOODAGORAAGREEAGRINAGROMAGUSHAHEADAHEAPAHIGHAHOLDAHULLAIDERAIGREAIMERAIOLIAIREDAIRERAIROLAISLEAITCHAJAVAAJOURAKENEAKNEEAKNOWALACKALANDALARMALARYALATEALBANALBEEALBUMALBYNALCESALDAYALDERALDOLALEAKALERTALEUTALFETALGAEALGALALGIDALGINALGOLALGORALGUMALIASALIBIALIENALIFEALIGNALIKEALINEALISHALIVEALLAHALLAYALLERALLEYALLISALLODALLOOALLOTALLOWALLOYALLYLALMAHALMANALMEHALMRYALMUGALOESALOFTALOGYALOINALONEALONGALOOFALOSAALOSEALOUDALPENALPHAALPIAALTARALTERALTHOALULAALUREALWAYAMAINAMASSAMATEAMAZEAMBERAMBITAMBLEAMBONAMBRYAMEBAAMEERAMENDAMENTAMESSAMICEAMIDEAMIDOAMIGOAMINEAMISHAMISSAMITYAMMANAMOLEAMONGAMORTAMOURAMOVEAMPLEAMPLYAMPULAMPYXAMSELAMUCKAMUSEAMVISAMYSSAMZELANAKSANASAANCLEANCONANEARANELEANENTANGELANGERANGLEANGORANGRYANIGHANILEANIMEANIONANISEANITOANKERANKLEANKUSANNALANNATANNEXANNOYANNULANNWNANODEANOILANOLEANOMYANONAANORNANTESANTICANTREANURAANURYANVILAORTAAOTUSAPACEAPAIDAPAIRAPARAAPARTAPEAKAPERTAPERYAPHIDAPHISAPIANAPIOLAPISHAPNEAAPODAAPODEAPORTAPPAYAPPELAPPLEAPPLYAPPUIAPRILAPRONAPSISAPTLYARABAARABYARACEARARAARAWNARBORARCHYARDORAREADAREALAREARARECAAREEDAREEKAREFYARENAARENGAREREARESTARETEARGALARGASARGILARGOLARGONARGOSARGOTARGUEARGUSARHATARIANARIELARIESARIONARISEARISTARLESARMEDARMETARMILARMORARNEEARNOTARNUTAROIDAROMAAROPHAROSEARPENARRASARRAYARRETARRHAARRISARROWARSISARSONARTLYARTOWARTSYARURUARVALARYANASCAPASCIIASCOTASCUSASHENASHESASIANASIDEASKERASKEWASLUGASOAKASPENASPERASPICASSAIASSAYASSETASSOTASSURASTAYASTELASTERASTIRASTONASTUNASURAATAKEATAXYATHARATILTATIMYATLASATMANATOLEATOLLATOMYATONEATONYATRIPATTALATTARATTERATTICATTLEATTRYAUBINAUCHTAUDADAUDENAUDIOAUDITAUGERAUGETAUGHTAUGURAULICAUNTYAURALAURICAURINAURUMAUXINAVAILAVALEAVANTAVASTAVENAAVENSAVERTAVIANAVILEAVISEAVISOAVOIDAVOKEAWAITAWAKEAWARDAWAREAWARNAWASHAWFULAWINGAWKLYAWNEDAWORKAXIALAXILEAXIOMAXLEDAXMANAYEINAYONDAYONTAYRIEAZIDEAZIDOAZOICAZOLEAZOTEAZOTHAZTECAZUREAZURNAZYMEBABELBABOOBABULBACCABACKSBACONBADGEBADLYBAFFYBAFTABAGELBAGGYBAGUEBAHAIBAHARBAIRNBAIZEBAKEDBAKENBAKERBALDYBALKYBALLSBALLYBALMYBALSABANALBANATBANCOBANDYBANJOBANNSBANTUBARADBARDEBARGEBARIABARICBARKYBARMYBARONBARRYBARSEBARTHBASALBASANBASEDBASICBASILBASINBASISBASONBASSABASSOBASTABASTEBASTOBATCHBATEDBATHEBATIKBATISBATONBATTABATTYBAULKBAUMEBAVINBAWDYBAYADBAYEDBAYOUBAYZEBAZARBEACHBEADYBEAMYBEANOBEANYBEARDBEARNBEASTBEATHBEAUTBEAUXBEDELBEDENBEDEWBEDIMBEDYEBEECHBEEFYBEELDBEERYBEETEBEEVEBEFITBEFOGBEGEMBEGETBEGINBEGODBEGOTBEGUMBEGUNBEHENBEIGEBEILDBEINGBEKAHBELAMBELAYBELCHBELEEBELIEBELLEBELLYBELOWBEMADBEMOLBENCHBENDYBENETBENIMBENNEBENNIBENNYBENTYBERAYBERBEBERCYBERETBERGHBERMEBEROBBEROEBERRYBERTHBERYLBESEEBESETBESITBESOMBESOTBETELBETONBETSOBETTYBEVELBEVERBEWETBEWIGBEWITBEZELBHANGBIBBEBIBBSBIBLEBICHOBIDDYBIDETBIELDBIFIDBIGAMBIGHABIGHTBIGLYBIGOTBIJOUBILBOBILGEBILGYBILINBILLYBIMLIBINALBINGOBINNYBIOMEBIOTABIPEDBIRCHBIRSEBIRTHBISIEBISONBITCHBITERBITTSBIZETBLACKBLADEBLADYBLAINBLAMEBLANCBLANDBLANKBLAREBLASEBLASTBLATEBLAZEBLEAKBLEARBLEATBLECKBLEEDBLEEPBLENDBLENKBLENTBLESSBLESTBLIMPBLINDBLINIBLINKBLINYBLIRTBLISSBLITEBLITZBLIVEBLOATBLOCKBLONDBLOODBLOOMBLOREBLOTEBLOWNBLOWYBLUESBLUEYBLUFFBLUNTBLURTBLUSHBOARDBOASTBOBACBOBBYBOCALBOCCABODGEBODLEBOEUFBOFFOBOGEYBOGGYBOGIEBOGLEBOGUEBOGUSBOHEABOIARBOISTBOLARBOLASBOLDOBOLDUBOLEYBOLISBOLSABOLTYBOLUSBOLYEBONCEBONEDBONERBONGOBONNEBONNYBONUSBONZEBOOBYBOODHBOOKYBOOLYBOONEBOORTBOOSEBOOSTBOOTHBOOTSBOOTYBOOZEBOOZYBORAXBOREDBOREEBORELBORERBORICBORNEBORONBORSHBORWEBOSKYBOSOMBOSONBOSSYBOSUNBOTCHBOTHYBOTTSBOUCHBOUGEBOUGHBOULEBOULTBOUNDBOURDBOURIBOURNBOUSEBOUSYBOVIDBOWEDBOWELBOWERBOWGEBOWLSBOWNEBOWSEBOXEDBOXENBOXERBOYARBOYAUBOYERBOYNEBRACEBRACHBRACKBRACTBRAGEBRAGIBRAIDBRAILBRAINBRAITBRAKEBRAKYBRAMABRAMEBRANDBRANKBRANTBRASHBRASSBRASTBRAVEBRAVOBRAWLBRAWNBRAXYBRAZEBREADBREAKBREAMBREDEBREEDBREMEBRENTBREREBRESTBRETTBREVEBRIARBRIBEBRICKBRIDEBRIEFBRIERBRIKEBRILLBRINEBRINGBRINKBRINYBRISKBRITEBRITHBRITSBRITTBRIZEBROADBROCKBROIDBROILBROKEBROMABROMEBRONCBRONDBROODBROOKBROOMBROSEBROTHBROWNBRUINBRUITBRUMEBRUNTBRUSHBRUSKBRUTABRUTEBUBBYBUCHUBUDGEBUDGYBUFFABUFFOBUFFYBUGGYBUGLEBUILDBUILTBULAUBULGEBULGYBULKYBULLABULLYBULSEBULTIBUNCEBUNCHBUNCOBUNGOBUNKOBUNNYBURELBURGHBURINBURKEBURLYBURNTBURROBURRYBURSABURSEBURSTBUSBYBUSHYBUSKYBUSTOBUTCHBUTEABUTEOBUTTEBUTTYBUTYLBUXOMBUXUSBUYERBYARDBYWAYCAABACABALCABASCABERCABINCABLECABOBCACAOCACHECADDYCADERCADETCADEWCADGECADGYCADIECADISCADRECAECACAGEDCAGITCAGOTCAIRDCAIRNCAIROCAJUNCALIDCALIFCALINCALIXCALLACALLECALMYCALPECALVECALYXCAMASCAMELCAMEOCAMISCAMUSCANALCANDYCANEDCANIDCANISCANNACANNYCANOECANONCANTOCANTYCAPELCAPERCAPLECAPOCCAPONCAPOTCAPRACAPRICAPUTCARACCARATCARDOCARETCAREXCARGOCARIBCAROBCAROLCAROMCARRYCARSECARTECARUSCARVECASALCASEDCASTECASUSCATCHCATELCATERCATESCATSOCATTYCAULKCAUMACAUSECAVILCAVINCAWKYCAXONCAZICCEASECEBUSCECALCECUMCEDARCEDRYCEIBACEIBOCEINTCELLACELLOCENSECENTOCEORLCERASCERESCERIACERINCERYLCETICCETINCETYLCHACECHACKCHAFECHAFFCHAINCHAIRCHAJACHALKCHAMPCHANKCHANTCHAOSCHAPECHAPSCHARACHARDCHARECHARKCHARMCHARRCHARTCHARYCHASECHASMCHASTCHATICHAUNCHAUSCHEAPCHEARCHEATCHECKCHEEKCHEEPCHEERCHELACHELYCHENGCHERTCHESECHESSCHESTCHEVECHEVYCHIANCHICACHICHCHICKCHICOCHIDECHIEFCHILDCHILICHILLCHIMBCHIMECHIMPCHINACHINECHINKCHINOCHIPSCHIRKCHIRMCHIRPCHIVECHIVYCHOAKCHOCKCHODECHOIRCHOKECHOKYCHOMPCHOPSCHORDCHORECHOSECHOUTCHUCKCHUETCHUFACHUFFCHUMPCHUNKCHURLCHURNCHURRCHUSECHUTECHYLECHYMECIBOLCIDERCIGARCILIACIMARCIMEXCIMIACINCHCIRCACIRIOCIRRICISCOCITALCITERCIVETCIVICCIVILCIZARCLACKCLAIKCLAIMCLAKECLAMPCLANGCLANKCLAPECLAPSCLARECLARTCLARYCLASHCLASPCLASSCLAVECLAVYCLEANCLEARCLEATCLEEKCLEFTCLEPECLERKCLICKCLIFFCLIFTCLIMBCLIMECLINGCLINKCLOAKCLOCKCLOFFCLOKECLOMBCLOMPCLONECLONGCLOOMCLOOPCLOOTCLOSECLOSHCLOTECLOTHCLOUDCLOUTCLOVECLOWNCLUCKCLUMPCLUNGCNIDACOACHCOACTCOALYCOASTCOATICOBBYCOBIACOBLECOBRACOCKYCOCOACOCUSCODEXCODLECODONCOGONCOGUECOIGNCOKESCOLETCOLICCOLINCOLLYCOLONCOLORCOLZACOMBECOMBOCOMERCOMESCOMETCOMFYCOMICCOMMACOMPOCOMPTCONCHCONDOCONEYCONGACONGECONGOCONIACONICCONNYCONTECONUSCOOEECOOEYCOOKYCOOLYCOOMBCOOPTCOPALCOPEDCOPPSCOPRACOPSECOPSYCOPTSCOQUECORAHCORALCORBECORBYCORDSCORDYCORERCORGICORKYCORNUCORNYCOROLCORPSCORSECORVECOSENCOSEYCOSTACOTTACOUCHCOUGHCOULDCOUNTCOUPECOURBCOURTCOUTHCOVERCOVETCOVEYCOVINCOWANCOWEDCOWERCOWRYCOYLYCOYOLCOYPUCOZENCRACKCRAFTCRAIECRAILCRAKECRAMPCRANECRANGCRANKCRAPECRAPSCRAPYCRARECRASECRASHCRASSCRATECRAVECRAWLCRAZECRAZYCREAKCREAMCREATCRECYCREDOCREEDCREEKCREELCREEPCREESCREMECREMSCREPECREPTCRESSCRESTCRETECREUXCRICKCRIEDCRIERCRIMECRIMPCRISPCRITHCROAKCROATCROCKCROFTCROISCROMACRONECRONYCROOKCROONCRORECROSSCROUDCROUPCROUTCROWDCROWNCROWSCROYSCROZECRUDECRUDYCRUELCRUETCRULLCRUMBCRUMPCRUNKCRUORCRURACRUSECRUSHCRUSTCRUTHCRWTHCRYALCRYERCRYPTCUBANCUBBYCUBEBCUBICCUBITCUDDYCUFFYCUFICCUISHCULEXCULLSCULLYCULPACULPECUMICCUMINCUPELCUPIDCUPPACUPPYCURATCURCHCURDYCURERCURIACURIOCURLYCURRYCURSECURSTCURVECUSHYCUTCHCUTINCUTISCUTTYCYCADCYCASCYCLECYDERCYMARCYMRYCYNICCYPRECZECHDACHADADDYDAGANDAGDADAGGADAGONDAILYDAINTDAIRADAIRYDAISYDAKARDAKERDAKIRDALEADALLYDAMANDAMARDAMPYDANCEDANCYDANDIDANDYDANSKDARBYDARERDARICDARKYDAROODASHYDASWEDATEDDATERDATUMDAUBYDAUNTDAVITDAZEDDEADSDEAREDEARNDEARYDEATHDEAVEDEBARDEBELDEBITDEBUTDECADDECAYDECILDECORDECOYDECRYDECYLDEEDSDEEDYDEESSDEFERDEFIXDEFLYDEGUMDEICEDEIFYDEIGNDEISMDEISTDEITYDEKLEDELAYDELFTDELITDELOODELPHDELTADELTSDELVEDEMITDEMONDEMURDENAYDENIMDENSEDEPOTDEPTHDERAYDERBYDERMADERNEDERREDERTHDESEXDETERDETOXDETTEDETURDEUCEDEUSEDEVEXDEVILDEVONDEVOWDEWARDHAKADHOLEDHONYDIANADIARYDICERDICKYDICOTDICTADIDALDIDSTDIDYMDIGHTDIGITDIGNEDIGUEDIKERDILDODILLYDIMITDIMLYDIMMYDIMYADINARDINERDINGODINGYDINKADINKYDIOTADIPSYDIRGEDIRTYDISHYDISMEDITCHDITTODITTYDIVANDIVELDIVERDIVESDIVETDIVOTDIVVYDIXIEDIZENDIZZYDNASEDOANDDOBBYDODGEDOGALDOGEYDOGIEDOGMADOILYDOINGDOLCEDOLLYDOLMADOLORDOLUSDOMALDOMEDDONARDONATDONAXDONEEDONETDONNADONORDOOLEDOOLYDOPEYDOREEDORICDORISDORKYDORMYDORSEDOSELDOTALDOTEDDOTERDOTTYDOUARDOUBTDOUCEDOUGHDOUPEDOURADOUSEDOWDYDOWELDOWERDOWLEDOWNYDOWRYDOWSEDOWSTDOWVEDOYENDOYLYDOZENDOZERDPHILDRACODRAFFDRAFTDRAILDRAINDRAKEDRAMADRANKDRAPEDRAVEDRAWLDRAWNDREADDREAMDREARDREINDRENTDRESSDRESTDREULDREYEDRIEDDRIERDRIFTDRILLDRILYDRINKDRITHDRIVEDROCKDROILDROITDROLLDROMEDRONEDRONYDROOLDROOPDROPTDROSSDROVEDROVYDROWNDRUIDDRUNKDRUPEDRUSEDRUSYDRUXYDRYADDRYASDRYERDRYLYDRYTHDUCALDUCATDUCHYDUCKYDUELODUENADULCEDULIADULLYDULSEDUMALDUMMYDUMPSDUMPYDUNCEDUNGYDUNNODUNNYDUOMODUPERDUPLEDURALDURGADURIODURRADURSTDUSKYDUSTYDUTCHDWALEDWANGDWARFDWAULDWELLDWELTDWINEDYAKSDYAUSDYINGDYNAMEAGEREAGLEEAGREEARALEAREDEARLYEARSHEARSTEARTHEASEDEASELEATENEATEREAVESEBLISEBONYECCLEECHONECLATECTADECTALEDDEREDDICEDEMAEDGEDEDICTEDIFYEDILEEDUCEEDUCTEERIEEFFETEGEANEGESTEGGAREGGEREGHENEGRETEGYPTEIDEREIGHTEIGNEEIKONEIRIEEISELEJECTEKINGELAINELANDELAPSELATEELAYLELBOWELDERELECTELEGYELEMIELEVEELFINELIDEELITEELLESELMENELOGEELOGYELOINELONGELOPEELOPSELSINELUDEELUTEELVANELVERELVESEMAILEMBAREMBAYEMBEDEMBEREMBOWEMBOXEMEEREMENDEMERYEMMEREMMETEMMEWEMONGEMOVEEMPTEEMPTYEMULEENACTENATEENDERENDOWENDUEENEIDENEMAENEMYENGLEENGYNENJOYENLAYENMEWENNEWENNUIENODEENORMENSISENSKYENSUEENTADENTALENTERENTRYENUREENVIEENVOYEOLICEOLISEOSINEPACTEPHAHEPHODEPHOREPOCHEPODEEPOPTEPUREEQUALEQUIPEQUUSERASEERATOERECTERGALERGATERGONERGOTERICAERMINERMITERODEEROSEERRORERUCAERUCTERUPTESCOTESKARESKERESSAYESTERESTOPESTREETAACETAPEETERNETHALETHELETHERETHICETHOSETHYLETTINETTLEETUDEETWEEEURUSEVADEEVENEEVENTEVERTEVERYEVICTEVITEEVOKEEWERYEXACTEXALTEXCELEXCUREXEATEXECTEXERTEXILEEXISTEXODEEXODYEXPELEXTOLEXTRAEXUDEEXULTEYGHTEYRENEYRIEFABLEFACEDFACERFACETFACIAFACTOFADDYFADEDFADERFADGEFADMEFAERYFAGOTFAHAMFAINTFAIRYFAITHFAKERFAKIRFALSEFALWEFANALFANCYFANONFARADFARCEFARCYFARENFARRYFARSEFARSIFASTIFATALFATEDFATLYFATSOFATTYFATWAFAUGHFAULDFAULEFAULTFAUNAFAUSTFAVASFAVELFAVORFAVUSFAXEDFEASTFEAZEFECALFECESFECKSFEEREFEESEFEEZEFEIGNFEINEFEINTFEIZEFELIDFELISFELLYFELONFEMMEFEMURFENCEFENKSFENNYFEOFFFERAEFERALFERDEFERIAFERIEFERLYFERMEFERNYFERREFERRYFESSEFESTEFETALFETCHFETIDFETISFETORFETTEFETUSFEUARFEVERFEWELFEYNEFEYREFHLMCFIBERFIBREFICHEFICHUFICUSFIDESFIDGEFIDIAFIELDFIENDFIERYFIFERFIFTHFIFTYFIGHTFILARFILCHFILERFILLEFILLYFILMYFILTHFINALFINCHFINDYFINEDFINERFINEWFINISFINNSFINNYFINOSFIORDFIRERFIRMSFIRRYFIRSTFIRTHFISHYFITCHFITLYFIVESFIXEDFIZZYFJORDFLAILFLAINFLAIRFLAKEFLAKYFLAMEFLAMYFLANGFLANKFLAREFLASHFLASKFLAWNFLAWYFLAXYFLEAKFLEAMFLEARFLECKFLEENFLEERFLEETFLEMEFLESHFLETEFLEWSFLICKFLIERFLINGFLINTFLIPEFLIRTFLISKFLITEFLOATFLOCKFLONGFLOODFLOOKFLOORFLORAFLOSHFLOSSFLOTAFLOTEFLOURFLOUTFLOWKFLOWNFLUEYFLUFFFLUIDFLUKEFLUKYFLUMEFLUNGFLUNKFLUORFLURTFLUSHFLUTEFLUTYFLYERFLYTEFNESEFOAMYFOCALFOCUSFOEHNFOGEYFOGGYFOGIEFOISTFOLIOFOLKSFOLLYFOLWEFOMESFOMORFONDEFONDUFONGEFONLYFONNEFOODYFOOTSFOOTYFORAYFORBYFORCEFORDOFORELFORGEFORGOFORKYFORMEFORTEFORTHFORTYFORUMFOSSAFOSSEFOULEFOUNDFOUNTFOURBFOUTYFOVEAFOXEDFOXESFOXLYFOYERFRACTFRAILFRAMEFRANCFRANKFRAPEFRAUDFREAKFRECKFREERFREMDFREREFRESHFRESSFRETTFREUDFREYAFREYRFRIARFRIEDFRIERFRIGGFRILLFRISKFRISTFRITHFRIZEFRIZZFROCKFRONDFRONSFRONTFROREFRORNFRORYFROSHFROSTFROTEFROTHFROWNFROWYFROZEFRUITFRUMPFRUSHFRYERFUAGEFUBBYFUBSYFUCHSFUCUSFUDGEFUEROFUFFYFUGLEFUGUEFULBEFULLYFUMERFUMETFUMIDFUNGEFUNGIFUNICFUNISFUNKAFUNKYFUNNYFURORFURRYFURZEFURZYFUSEDFUSEEFUSELFUSILFUSSYFUSTYFUZEEFUZZYFYTTEGABELGABLEGADICGADREGAFFEGAGERGAILYGALBEGALEAGALEIGALLYGALOPGALPEGAMBAGAMEYGAMICGAMINGAMMAGAMUTGANCHGANGEGANILGANJAGANSAGANZAGAPERGAPESGARTHGARUMGASSYGATCHGATEDGAUDYGAUGEGAULTGAUNTGAUREGAUSSGAUZEGAUZYGAVELGAVOTGAWBYGAWKYGAYALGAYLYGAYNEGAZELGAZERGAZETGAZONGECKOGEESEGEESTGELIDGELLYGEMELGEMMAGEMMYGEMULGENETGENIEGENIOGENIPGENREGENTYGENUSGENYSGEODEGERAHGERBEGEREAGESSEGESSOGESTEGETENGETUPGHANAGHASTGHAUTGHAZIGHESSGHOLEGHOSTGHOULGHYLLGIANTGIBELGIBERGIDDYGIFFYGIGOTGIGUEGILLYGILSEGIMELGINEPGIPSYGIRRUGIRTHGISLEGIUSTGIVENGIVERGIVESGLACEGLADEGLAIRGLAMAGLANDGLANSGLAREGLARYGLASSGLAUMGLAVEGLAZEGLAZYGLEADGLEAMGLEANGLEBAGLEBEGLEBYGLEDEGLEEDGLEEKGLEENGLEETGLENTGLIDEGLIFFGLIKEGLINTGLISTGLOAMGLOARGLOATGLOBEGLOBYGLODEGLOMEGLOOMGLOREGLORYGLOSEGLOSSGLOSTGLOUTGLOVEGLOZEGLUEDGLUERGLUEYGLUMEGLUMPGLYPHGNARLGNASHGNIDEGNOMEGOBETGOBIOGODLYGOETYGOINGGOLDEGOLETGOMANGOMBOGOMERGONADGONNAGONYSGOODSGOODYGOOFYGOOSEGOOSTGORALGORCEGORGEGORKYGORMAGORSEGOTERGOTTAGOUGEGOURAGOURDGOUTYGOWANGRAALGRACEGRADEGRAFFGRAFTGRAILGRAINGRAIPGRAMEGRANDGRANEGRANTGRAPEGRAPHGRAPYGRASPGRASSGRATEGRAVEGRAVYGRAZEGREATGREBEGREEDGREEKGREENGREETGREGEGREGOGREITGRENEGRETEGREVEGRIASGRICEGRIDEGRIEFGRIFFGRILLGRIMEGRIMYGRINDGRINTGRIPEGRISEGRISTGRITHGRIZEGROANGROATGROINGRONDGROOMGROPEGROSSGROSZGROTEGROUPGROUTGROVEGROVYGROWLGROWNGRUELGRUFFGRUMEGRUNTGRYDEGRYPEGUACOGUAMAGUANAGUANOGUARAGUARDGUAVAGUELFGUESSGUESTGUEVIGUIACGUIDEGUIGEGUILDGUILEGUILTGUISEGULAEGULARGULCHGULESGULFYGULLYGULPHGULTYGUMBOGUMMAGUMMYGUNNYGUPPYGURGEGURMYGURRYGURTSGUSHYGUSTOGUSTYGUTSYGUTTAGUTTYGUYLEGYALLGYNNEGYPSEGYPSYGYRALGYRONGYRUSHABITHABLEHADESHADJIHAILYHAIRYHAITIHAJJIHAKIMHALMAHALSEHALVEHALWEHAMALHAMELHANAPHANCEHANCHHANDSHANDYHANKYHANSAHANSEHAOMAHAPLYHAPPYHARDSHARDYHAREMHARLEHARNSHARPAHARPYHARREHARRYHARSHHASTEHASTYHATCHHATELHATERHATTEHAUGHHAULMHAULSHAULTHAUNTHAVENHAVERHAVOCHAWSEHAZELHAZLEHEADYHEALDHEAPSHEAPYHEARDHEARTHEATHHEAVEHEAVYHEBENHEDGEHEEDYHEFTYHEGELHEGGEHELIXHELLOHELLYHELOTHELVEHEMALHEMINHEMPYHENCEHENDEHENDYHENENHENNAHENRYHEPARHEPTAHERBYHERENHERIEHERMAHERNEHERONHERSEHERTEHERTZHEUGHHEVEAHEVEDHEWERHEXADHEXYLHEYGHHEYNEHIDERHIEMSHIGHTHIGREHIJRAHILALHILARHILLYHILUMHILUSHINDIHINDUHINGEHINNYHIPPAHIPPEHIPPOHIPPSHIREDHIRERHIRESHITCHHITHEHIVERHIVESHOAGYHOARDHOARYHOBBYHOBITHOBOYHOCCOHOCUSHODDYHOFULHOGANHOISEHOISTHOKERHOLEYHOLLAHOLLOHOLLYHOLWEHOMERHOMEYHONEYHONKYHONORHOOCHHOODYHOOKYHOOPSHOOVEHOPERHOPPOHORALHORDEHORNYHORSEHORSYHOSENHOSTAHOTELHOTENHOTLYHOUGHHOULTHOUNDHOURIHOURSHOUSEHOUSSHOUVEHOVELHOVENHOVERHOWDYHOWELHOWSOHOWVEHSIENHUBBYHUDGEHUFFYHULANHULCHHULKYHULLOHULLYHUMANHUMICHUMIDHUMINHUMORHUMPHHUMPYHUMUSHUNCHHUNKSHUNKYHUNTEHURDSHURLYHURRAHURRYHURSTHUSKYHUSSYHUTCHHUZZAHYADSHYDRAHYDROHYENAHYLICHYMARHYMENHYOIDHYPHAHYRAXHYRSEHYRSTHYSONHYTHEIBSENICACOICHORICILYICINGICKLEICTICICTUSIDEALIDEATIDIOMIDIOTIDLERIFEREIGLOOIHRAMILAMAILEACILEUMILEUSILIACILIADILIALILIONILIUMILKONIMAGEIMAGOIMAUMIMBANIMBARIMBAYIMBEDIMBOWIMBOXIMBUEIMIDEIMIDOIMMEWIMMITIMMIXIMPELIMPENIMPLYINANEINAPTINCANINCLEINCOGINCURINCUSINDEWINDEXINDIAINDININDOLINDOWINDRIINDUEINEPTINERMINERTINEYEINFERINFIXINFRAINGLEINGOTINIALINIONINKERINKLEINLAWINLAYINLETINMEWINNERINSETINSUEINTERINUREINURNINUSTINWITIODALIODICIODOLIONIAIONICIOWASIPSUSIRADEIRAKIIRANIIRAQIIRATEIRIANIRISHIRONEIRONYIROUSISIACISLAMISLETISSUEISSUSISTLEITALAITCHYIULUSIVIEDIVORYIXTILIXTLEIXTLIIYYARIZARDIZEDIJABOTJACALJACKYJACOBJADEDJAGERJAGGYJAHVEJAINAJAKESJAKIEJALAPJAMBEJAMESJANTUJANTYJANUSJAPANJAPERJARDSJARVYJASEYJASONJASPEJAUNTJAVELJAWEDJAYETJAZELJAZZYJEARSJEERSJEHADJELLOJELLYJEMMYJENNYJERIDJERKYJERRYJESSEJESUSJETTYJEWELJEWRYJIFFYJIHADJIMMYJINGOJINKSJINNIJIPPOJIQUIJOINTJOISTJOKERJOLIFJOLLYJOLTYJONAHJORAMJORUMJOSSAJOUGSJOULEJOUSTJUDASJUDGEJUGALJUGERJUGGSJUGUMJUICEJUICYJUISEJULEPJULUSJUMBOJUMPYJUNCOJUNTAJUNTOJUPONJURALJURATJURELJURORJUSSIJUTESJUTTYJUVIAKAABAKAAMAKABOBKAFALKAFIRKAFKAKAHAUKALANKALIFKALKIKALPAKAMETKAPIAKAPOKKARATKARENKARMAKAROBKAURIKAURYKAYAKKAYKOKAZOOKEBABKEBOBKECKYKEDGEKEECHKEELSKEESHKEEVEKEFIRKELPYKEMPEKEMPSKEMPTKENYAKERSEKERVEKESARKETCHKETOLKEVELKEVERKEVINKEYEDKHAKIKHAYAKHONDKIAATKIANGKIBEDKIDDEKIDDYKIEVEKILEYKIMBOKIMRYKINICKINITKINKYKIOSKKITHEKITTEKITTYKIVERKLICKKLOOFKNACKKNARLKNAVEKNEADKNECKKNEEDKNEELKNELLKNELTKNIFEKNISHKNITSKNOCKKNOLLKNOSPKNOUTKNOWNKNUBSKNUFFKNURLKOALAKODAKKOGIAKONZEKOORDKOPJEKORANKOREAKORINKOTOWKRAALKRAITKRANGKREELKREMSKRENGKRONEKUDOSKUFICKULANKUTCHKVASSKWEEKKWELAKYACKKYDDEKYLEYKYLIEKYMRYKYRIEKYTHELABELLABIALABORLACEDLACHELADDELADENLADINLADLELAFTELAGANLAGERLAGLYLAIRDLAISMLAITYLAKAOLAKERLAKINLAKKELAMELLAMESLAMIALANAILANCELANCHLANKYLANSALAOZILAPELLAPISLAPPSLAPSELARCHLARDYLARESLARGELARGOLARIXLARRYLARUMLARVALARVELASERLASSELASSOLASTELATAHLATCHLATEDLATERLATESLATEXLATHELATHYLATINLATONLATTELAUGHLAUNDLAURALAVERLAVICLAWERLAWNDLAWNYLAXLYLAYBYLAYERLAYIALAZARLEACHLEADYLEAFYLEAKYLEANYLEARNLEASELEASHLEASTLEASYLEAVELEAVYLEBANLECHELEDENLEDGELEDGYLEDUMLEECHLEEDELEEMELEERELEESELEFTYLEFULLEGALLEGERLEGGELEGGYLEMANLEMMALEMNALEMONLEMURLENDSLENTOLEPALLEPASLEPERLEPIDLEPPYLEPRALEPRELEPRYLEPUSLEREDLEROTLETCHLETENLETHELETHYLETTELETTSLEUKELEVEELEVELLEVENLEVERLEVETLEVINLEVIRLEWISLEYTELHASALIAGELIANALIANELIARDLIBELLIBERLIBRALIBYALICHILICITLIDGELIEGELIEVELIFENLIGANLIGGELIGHTLIKENLIKINLILACLIMANLIMAXLIMBOLIMENLIMERLIMITLIMPALIMSYLINCHLINDYLINEDLINENLINERLINGALINGOLINKSLINNELINUMLIPICLIPIDLIPSELIPYLLISLELISNELITERLITHELITHOLITHYLITRELIVEDLIVENLIVERLIVESLIVIDLIVORLIVRELLAMALLANOLOACHLOADSLOAMYLOASALOATHLOBARLOBBYLOBEDLOCALLOCHELOCKYLOCUSLODDELODGELOESSLOFFELOFTYLOGANLOGGELOGICLOGOSLOIRELOKAOLONGELOOBYLOOCHLOONYLOORDLOOSELOPERLOPPYLORALLORANLORELLORENLORISLORRYLOSELLOSERLOTOSLOTTOLOTUSLOUGHLOUPELOUPSLOURILOUSELOUSYLOVEDLOVEELOVERLOWANLOWERLOWGHLOWLYLOWRYLOYALLUCIDLUCKYLUCRELUGERLUMENLUMPYLUNARLUNCHLUNDALUNETLUNGELUPUSLURCHLURIDLURRYLUSTYLUTERLUTRALYCEELYCHELYDENLYGUSLYINGLYKENLYMPHLYNCHLYNDELYRICLYRIDLYRIELYSISLYSSALYTHELYTTAMABBYMACAOMACAUMACAWMACCOMACERMACHOMACLEMACONMACROMADAMMADGEMADIAMADIDMADLYMAFIAMAGICMAGMAMAGOTMAGUSMAHDIMAHOEMAIANMAINEMAINSMAIZEMAJORMAKEDMAKERMALARMALAXMALAYMALEOMALETMALICMALMAMALTAMALTYMALUMMALVAMAMMAMAMMYMANCAMANEDMANEHMANESMANGEMANGOMANGYMANIAMANICMANIDMANIEMANISMANKSMANLYMANNAMANORMANSEMANTAMANTOMANULMANUSMAORIMAPLEMAQUIMARAIMARCHMARGEMARIAMARIEMARLYMAROCMARRYMARSHMASAIMASERMASHYMASONMASSEMASSYMASTYMATCHMATEDMATERMATEYMATIEMATINMATTEMATZOMAULEMAUNDMAUVEMAVISMAWKSMAWKYMAXIMMAYANMAYBEMAYORMAZERMEACHMEALYMEANTMEASEMEATHMEATYMEAWLMEDALMEDIAMEDICMEDLEMEDLYMEDOCMEECHMEETHMEINEMEINYMELAMMELEEMELICMELNEMELOEMELONMENDSMENGEMENOWMENSEMERCEMERCYMERGEMERITMERKEMERLEMEROSMEROUMERRYMERUSMESADMESALMESELMESHYMESNEMESONMETALMETERMETICMETIFMETISMETOLMETREMETTEMEUSEMEUTEMEXALMEYNEMEZZOMHORRMIASMMIAULMICHEMIDASMIDDYMIDGEMIDSTMIGHTMILCHMILKYMIMEOMIMERMIMICMIMIRMIMUSMINCEMINEDMINERMINGEMINIMMINNYMINORMINOSMINOWMINUMMINUSMIRKYMIRTHMIRZAMISDOMISERMISGOMISLEMISLYMISSAMISSYMISTYMITERMITREMITTYMIXEDMIXENMIXERMIZZYMNIUMMOATEMOBLEMOCHAMOCHEMODALMODELMODEMMODERMODUSMOEVEMOGULMOHURMOILEMOIRAMOIREMOISTMOLALMOLARMOLDYMOLLEMOLLYMOLTOMOMOSMOMOTMOMUSMONADMONALMONASMONDEMONERMONEYMONTEMONTHMOOCHMOODYMOOLAMOONGMOONYMOORYMOOSEMOPSYMOPUSMORALMORAYMORELMORESMORIAMORICMORILMORINMORMOMORNEMORONMOROSMORPHMORROMORSEMORUSMORWEMOSELMOSESMOSEYMOSSYMOSTEMOTEDMOTETMOTHYMOTIFMOTONMOTORMOTTEMOTTOMOTTYMOULDMOULEMOULTMOUNDMOUNTMOURNMOUSEMOUSYMOUTHMOVEDMOVERMOVIEMOWERMOXIEMOYLEMSASAMUCICMUCIDMUCINMUCKYMUCORMUCROMUCUSMUDARMUDDYMUDIRMUFTIMUGGYMUGILMUJIKMULCHMULCTMULEYMULLAMULSEMUMMYMUMPSMUNCHMUNGAMUNGOMUNJAMURALMUREXMURKYMURREMURRYMURTHMURZAMUSALMUSARMUSCAMUSCIMUSERMUSETMUSHYMUSICMUSITMUSKYMUSSYMUSTHMUSTYMUTCHMUTEDMUTICMUZZYMYNAHMYOIDMYOMAMYOPEMYOPSMYOPYMYRRHMYSISMYTHENABITNABOBNACHONACRENADDENADIRNAEVENAGGYNAGORNAIADNAIVENAJASNAKEDNAKERNAKOONAMEDNAMERNAMMUNANDUNANNANANNYNAPPENAPPYNAPUSNARESNARRENARWENASALNASSANASTYNATALNATCHNATESNATKANATTYNAUCHNAVALNAVELNAVEWNAVVYNAWABNEDDYNEEDSNEEDYNEELDNEELENEESENEGEVNEGRONEGUSNEIFENEIGHNEMPTNENIANERKANERRENERVENERVYNETTYNEVENNEVERNEVEWNEWELNEWLYNEWSYNEXUSNGINANICHENIDORNIDUSNIECENIFFYNIFLENIFTYNIGHTNIGUANIHILNINIBNINNYNINONNINTHNINUTNIOBENIOPONIPPYNISANNISEYNISTENISUSNITERNITIDNITRENITRONITRYNITTYNIVALNIXIENIZAMNJORDNOBBYNOBLENOBLYNODALNODDYNOGHTNOIERNOILSNOINTNOISENOISYNOLDENOMADNOMENNOMICNONCENONDANONDONONESNONETNONNENONNYNONYLNOOSENOPALNORIANORIENORMANORNANORSENORTHNOSEDNOSELNOSEYNOSLENOTALNOTCHNOTEDNOTERNOTUMNOTUSNOUCHNOULDNOULENOVELNOVUMNOWAYNOWCHNOWEDNOWELNOWESNOYAUNOYERNOYLSNOZLENUBIANUCHANUCINNUDGENUGAENUMPSNURSENUSKUNUTTYNYALANYLONNYMPHNYULAOAKENOAKEROAKUMOAREDOASISOATENOBEAHOBESEOBOLEOBOLOOBROKOCCUROCEANOCHEROCHREOCHRYOCREAOCTADOCTETOCTICOCTYLODDLYODEONODEUMODISTODIUMODIZEODMYLODYLEOELETOFFALOFFEROFTENOFTEROGHAMOGIVEOGLEROGLIOOILEDOILEROKAPIOLDENOLEICOLEINOLENTOLIVAOLIVEOLOGYOMANIOMBEROMBREOMEGAONELYONIONONSETOONESOOPAKOOZOAOPAKEOPEPEOPERAOPINEOPIUMOPTICORACHORANGORBEDORBICORBITORCINORCUSORDALORDEROREADORGALORGANORGUEORIELORIOLORIONORLOPORMERORPINORRISORVALORVETORYALORYZAOSAGEOSCANOSIEROSMICOSTICOTARYOTHEROTTAROTTEROUGHTOUNCEOUNDYOUPHEOUSELOUTDOOUTEROUTGOOUTREOUZELOVANTOVARYOVATEOVERTOVILEOVINEOVISMOVISTOVOIDOVOLOOVULEOWHEROWINGOWLEROWLETOWNEDOWNEROWSEROXBOWOXEYEOXFLYOXIDEOXIMEOXLIPOXTEROYLETOZENAOZONEPAAGEPAARDPACEDPACERPACHAPACOSPADARPADDYPADGEPADOWPADREPAEANPAEONPAGANPAGERPAGODPAIENPAINSPAINTPAISEPALEAPALEDPALETPALLAPALLYPALMYPALPIPALSYPALUSPAMPAPANAXPANCEPANCHPANCYPANDAPANEDPANELPANICPANIMPANNEPANSYPANTSPANYMPAOLOPAPALPAPAWPAPERPAPPYPAPUAPAQUEPARAMPARCHPARDEPARDOPARERPARISPARKAPARKYPARLEPAROLPARRYPARSEPARSIPARTSPARTYPARUSPASANPASCHPASHAPASPYPASSEPASTAPASTEPASTYPATASPATCHPATEDPATEEPATENPATINPATIOPATLYPATTEPATTYPAUGYPAUNEPAUSEPAUXIPAVANPAVEDPAVENPAVERPAVIDPAVINPAVISPAVONPAWKYPAYEEPAYENPAYERPAYORPAYSEPEACEPEACHPEAGEPEAKYPEARLPEARTPEASEPEATYPEAVYPECANPECCOPECULPEDALPEDROPEECEPEELEPEERTPEERYPEISEPEKANPEKOEPELMAPELTAPENALPENCEPENISPENNAPENNYPEONYPEPPYPEPSIPERCAPERCEPERCHPERDUPERDYPERELPERILPERKYPERRYPESKYPESTOPETALPETARPETERPETITPETREPETTOPETTYPEWEEPEWETPEWITPFALZPHANEPHAREPHAROPHASEPHASMPHEBEPHEERPHENEPHEONPHIALPHLOXPHOCAPHONEPHONOPHONYPHOTOPHTORPHYLEPHYMAPHYSAPIANOPICEAPICLEPICOTPICRAPICTSPICULPICUSPIECEPIENDPIENOPIETAPIETYPIGHTPIGMYPIKEDPILAUPILCHPILEDPILERPILESPILONPILOTPILWEPINAXPINCHPINEYPINICPINKYPINNAPINTOPINUSPIONYPIOUSPIPEDPIPERPIPITPIPRAPIQUEPIRAIPIRIEPIRRYPISAYPISHUPISTEPITCHPITHYPITONPITTAPIVOTPIXIEPLACEPLACKPLAGAPLAGEPLAIDPLAINPLAITPLANEPLANKPLANTPLASHPLASMPLATEPLATTPLATYPLAUDPLAYAPLAZAPLEADPLEATPLEBEPLEBSPLEINPLENEPLESHPLETEPLEYTPLICAPLIEDPLITTPLOCEPLUCKPLUFFPLUMAPLUMBPLUMEPLUMPPLUMYPLUNKPLUSHPLUTOPLYERPOACHPOAKEPOCANPOCKYPODGEPODGYPOESYPOGGYPOINDPOINTPOISEPOIZEPOKALPOKERPOKETPOKEYPOLARPOLERPOLEYPOLKAPOLLYPOLYPPOMELPOMEYPOMMEPONGOPONTYPOOCHPOPETPOPPYPORCHPORERPORGYPORTAPORTEPOSEDPOSERPOSITPOSSEPOTCHPOTOOPOTTOPOUCHPOULPPOULTPOUNDPOWANPOWENPOWERPOYNDPOYOUPRAAMPRAMEPRANKPRASEPRATEPRAWNPREDEPREDYPREEFPREENPREESPRESSPRESTPREVEPRIALPRIANPRICEPRICKPRIDEPRIEDPRIEFPRIERPRILLPRIMEPRIMOPRIMPPRIMYPRINKPRINTPRIONPRIORPRISEPRISMPRIVYPRIZEPROBEPRODDPROEMPROINPROKEPROLLPRONEPRONGPRONKPROOFPROPSPROREPROSEPROSTPROSYPROUDPROVEPROWLPROXYPRUCEPRUDEPRUNEPRYANPSALMPSHAWPSOASPSORAPUBESPUBICPUBISPUCELPUCKAPUDGYPUDICPUFFYPUGILPUKERPUKKAPULASPULERPULEXPULPYPULSEPUNCHPUNGYPUNICPUNKAPUNTOPUNTYPUPALPUPILPUPPYPUREDPUREEPURGEPURIMPURREPURSEPURSYPUSILPUSSYPUTIDPUTRYPUTTYPYGALPYGMYPYKARPYLONPYOIDPYRALPYRUSPYXIEPYXISQUACKQUADEQUAFFQUAILQUAIRQUAKEQUAKYQUALMQUANTQUARLQUARTQUASHQUASIQUASSQUATAQUAVEQUAYDQUBITQUEANQUECHQUECKQUEENQUEERQUEGHQUELLQUEMEQUERLQUERNQUERYQUESTQUEUEQUICAQUICEQUICHQUICKQUIETQUILLQUILTQUINTQUIPOQUIPUQUIREQUIRKQUIRLQUIRTQUISHQUITEQUITSQUOIFQUOILQUOINQUOITQUOKEQUOLLQUOOKQUOTAQUOTEQUOTHQURANRAASHRABATRABBIRABIDRABOTRACERRACHERACLERADARRADDERADIIRADIXRADONRAFTERAFTYRAGGYRAIAERAINYRAISERAJAHRAKEERAKELRAKERRALLYRALPHRAMALRAMEDRAMEERAMIERAMMYRAMPERAMUSRANALRANCERANCHRANEERANGERANGYRANNYRANTYRAPHERAPIDRASPYRASSERATANRATCHRATELRATERRATHERATIORATONRAVELRAVENRAVERRAVINRAWLYRAYAHRAYONRAZEDRAZEERAZORREACHREACTREADYREALMREAMEREARMREATAREAVEREBECREBELREBUSREBUTRECTORECURREDANREDDEREDIAREDIFREDLYREDUBREEDYREEFYREEKYREEVEREFARREFELREFERREFITREFIXREFUTREGALREGELREGETREGIEREGLEREGMAREGNEREIGNREINSREKNERELAXRELAYRELICRELIKREMITREMIXREMUERENALRENAYRENEWRENNERENTEREPAYREPELREPLYRERUNRESAWRESETRESINRESOWRESTYRETCHRETEXRETRYRETTEREULEREUMEREVELREVETREVIEREWETREWINREWLEREWMEREWTHREYSERHEAERHEICRHEINRHEUMRHIMERHINERHINORHOMBRHUMBRHYMERIANTRIBANRIBESRIDENRIDERRIDGERIDGYRIFLERIGELRIGHTRIGIDRIGOLRIGORRILLERIMERRIMEYRINDYRINEDRINSERIPENRISENRISERRISKYRISSERIVALRIVELRIVENRIVERRIVETROACHROASTROBINROBLEROCHEROCKYROCOARODDYRODEORODGEROGERROGUEROGUYROHOBROIALROILYROINTROISTROKEEROMANROMICROMPURONCORONDERONDORONINRONNEROODYROOFYROOKYROOMYROOSTROOTYROPERROQUERORALRORICRORIDROSENROSERROSETROSINROTALROTORROTTAROUETROUGEROUGHROUNDROUSEROUSTROUTEROVERROWANROWDYROWEDROWELROWENROWERROYALROYNERUBINRUBLERUBUSRUCHERUDDYRUFFERUFOLRUGGYRUGINRULERRUMBORUMENRUMMYRUMORRUNCHRUNERRUNICRUNTYRUPEERUPIARURALRUSHYRUSMARUSTYRUTICRUTINRUTTYRYDERSAADHSABALSABERSABLESABOTSABRESACARSACRESADDASADLYSAGUMSAGUSSAHEBSAHIBSAHUISAIGASAILYSAINTSAITHSAIVASAJOUSAKERSAKTISALADSALAMSALEBSALEPSALICSALIXSALLYSALMISALOLSALONSALPASALSESALTYSALUESALVESALVOSAMAJSAMBOSANDYSANGASANGUSANNYSAPIDSAPORSAPPYSAREESARGOSAROSSARPOSARSASARSESASINSASSESATANSATINSATLESATYRSAUCESAUCYSAUGHSAUKSSAULTSAURYSAUTESAVERSAVINSAVORSAVOYSAVVYSAWERSAXONSAYERSAYNDSCALASCALDSCALESCALLSCALPSCALYSCAMPSCANTSCAPESCARDSCARESCARFSCARNSCARPSCARYSCATESCATHSCATTSCAUPSCAURSCENASCENESCENTSCERNSCHAHSCIFISCINKSCIONSCIOTSCISESCLAVSCOATSCOBSSCOFFSCOKESCOLDSCOLESCOMMSCONESCOOPSCOOTSCOPESCORESCORNSCOTHSCOTSSCOURSCOUTSCOWLSCRAGSCRAMSCRAPSCRATSCRAWSCRAYSCREESCREWSCRIDSCRIMSCRIPSCRITSCRODSCROGSCROWSCRUBSCUDOSCUFFSCULKSCULLSCULPSCURFSCUTASCUTESCYLESDAINSEAMYSEAVESEAVYSEBATSEBICSECCOSECHESECLESECRESEDANSEDGESEDGYSEDUMSEEDYSEELYSEEPYSEETHSEGARSEGGESEGNOSEIGHSEINESEINTSEISESEITYSEIZESEKESSELAHSELCHSELVESEMENSENGESENNASENORSENSESENZASEPALSEPIASEPICSEPONSEPOYSERACSERAISERGESERIESERINSERONSEROWSERRYSERUMSERVESERYESESSASETEESETENSETIMSETONSEVENSEVERSEWELSEWENSEWERSEWINSEXEDSEXLYSEXTOSEYENSEYNDSEYNTSHACKSHADDSHADESHADYSHAFTSHAIKSHAILSHAKESHAKOSHAKYSHALESHALLSHALMSHALTSHALYSHAMASHAMESHANKSHAPESHAPSSHARDSHARESHARKSHARPSHASHSHAVESHAWLSHAWMSHEAFSHEALSHEARSHEENSHEEPSHEERSHEETSHEIKSHEILSHELDSHELFSHELLSHENDSHENTSHEOLSHERDSHERNSHETESHETHSHEWNSHIAHSHIDESHIEDSHIELSHIFTSHILFSHILLSHILYSHINESHINYSHIRESHIRKSHIRLSHIRRSHIRTSHISTSHIVESHOADSHOALSHOARSHOATSHOCKSHODESHOERSHOLASHOLESHONESHOOISHOOKSHOONSHOOPSHOOTSHORESHORLSHORNSHORTSHORYSHOTESHOTSSHOUTSHOVESHOWNSHOWYSHRAGSHRAMSHRAPSHREDSHREWSHROWSHRUBSHRUGSHTIKSHUCKSHUDESHUNTSHUTESHYLYSIAGASIBYLSICCASICERSICLESIDEDSIDERSIDLESIEGESIEURSIEVASIEVESIFACSIGHTSIGILSIGLASIGMASIKERSIKHSSILEXSILKYSILLYSILTYSILVASIMARSIMIASINCESINCHSINDISINEWSINGESINICSINTOSINTUSINUSSIOUXSIPIDSIRENSIROCSIRUPSISELSISERSITEDSITHESITUSSIVANSIVERSIWINSIXTHSIXTYSIZARSIZEDSIZELSIZERSKAINSKALDSKALLSKARESKARTSKATESKEANSKEEDSKEELSKEETSKEINSKELPSKENESKIEDSKIEYSKIFFSKILLSKIMPSKINKSKIRLSKIRRSKIRTSKIVESKOUTSKULKSKULLSKUNKSKUTESKYEDSKYEYSLACKSLADESLAIESLAKESLANGSLANKSLANTSLAPESLASHSLATESLATTSLATYSLAVESLAZYSLEEKSLEEPSLEERSLEETSLEIDSLENTSLEPTSLICESLICHSLICKSLIDESLILYSLIMESLIMYSLINGSLINKSLISHSLIVESLOAMSLOATSLOCKSLOKESLOOMSLOOPSLOPESLOPYSLOSHSLOTHSLOWHSLOWSSLOYDSLUDYSLUGSSLUMPSLUNGSLUNKSLUSHSLYLYSLYPESMACKSMALLSMALTSMARTSMASHSMEARSMEIRSMELLSMELTSMERKSMIFTSMILESMILTSMIRKSMITESMITHSMITTSMOCKSMOKESMOKYSMOLTSMOORSMORESMOTESNACKSNAILSNAKESNAKYSNAPESNARESNARLSNARYSNASTSNATHSNEADSNEAKSNEAPSNECKSNEEDSNEERSNELLSNICKSNIDESNIFFSNIFTSNIGGSNIPESNIPYSNITESNOFFSNOODSNOOKSNORESNORTSNOUTSNOWLSNOWYSNUFFSOAKYSOAPYSOAVESOBERSOCKYSOCLESODDYSODERSODICSOFTASOGERSOGGYSOILYSOJERSOKENSOLARSOLASSOLDOSOLENSOLERSOLIDSOLONSOLUSSOLVESOMAJSOMALSOMNESONCYSONDESONSYSOORDSOOTESOOTHSOOTYSOPHISOPORSOPPYSOPRASOREESORELSOREXSORGOSORRYSORUSSORWESOTELSOTHESOTILSOUCESOUGHSOUKESOUNDSOUNESOUPYSOURSSOUSESOUTHSOWARSOWCESOWERSOWLESOWNESOWSESOYLESPAADSPACESPADESPADOSPAHISPAIDSPAKESPAKYSPALESPALLSPALTSPANESPANGSPANKSPARESPARKSPARYSPASMSPATESPAWLSPAWNSPEAKSPEARSPECESPECKSPEEDSPEERSPEETSPEIRSPEKESPELKSPELLSPELTSPENDSPENTSPERESPERMSPEWYSPHEXSPIALSPICASPICESPICKSPICYSPIEDSPIKESPIKYSPILESPILLSPILTSPINESPINKSPINYSPIRESPIRTSPIRYSPISSSPITESPLAYSPLITSPOILSPOKESPONGSPONKSPOOKSPOOLSPOOMSPOONSPOORSPORESPORTSPOUTSPRADSPRAGSPRATSPRAYSPREESPREWSPRIGSPRITSPRODSPRUESPRUGSPUKESPUMESPUMYSPUNKSPURNSPURTSPUTESPYNESQUABSQUADSQUAMSQUATSQUAWSQUIBSQUIDSQUIRSTACKSTADESTAFFSTAGESTAGYSTAIDSTAILSTAINSTAIRSTAKESTALESTALKSTALLSTAMPSTANDSTANESTANGSTANKSTANTSTARESTARFSTARKSTARNSTARTSTATESTATSSTAVESTEADSTEAKSTEALSTEAMSTEANSTEEDSTEEKSTEELSTEEMSTEENSTEEPSTEERSTEIKSTEINSTELASTELESTELLSTENTSTERESTERNSTERTSTEVESTIANSTICHSTICKSTIFFSTIKESTILESTILLSTILTSTIMESTIMYSTINGSTINKSTINTSTIPESTIRKSTIRPSTIRTSTITHSTIVESTOAKSTOATSTOCKSTOGYSTOICSTOKESTOLASTOLESTOMASTOMPSTONDSTONESTONTSTONYSTOODSTOOKSTOOLSTOOMSTOOPSTOORSTOPESTORESTORKSTORMSTORYSTOTESTOUPSTOURSTOUTSTOVESTRAMSTRAPSTRAWSTRAYSTREESTREWSTRIASTRIDSTRIPSTRIXSTROPSTROWSTROYSTRUMSTRUTSTUCKSTUDYSTUFASTUFFSTUKESTULLSTULMSTULPSTUMPSTUNGSTUNKSTUNTSTUPASTUPESTURBSTURKSTURTSTYANSTYCASTYLESUADESUAGESUANTSUAVESUBAHSUCRESUDRASUEDESUENTSUETYSUGARSUINESUINGSUINTSUISTSUITESULKSSULKYSULLYSUMACSUMPHSUNNASUNNYSUNUPSUPERSUPRASURAHSURALSURFYSURGESURGYSURLYSUTORSUTRASWAGESWAINSWAIPSWALESWAMPSWANGSWAPESWARDSWARESWARFSWARMSWARTSWASHSWATESWATHSWEALSWEARSWEATSWEDESWEEPSWEETSWELLSWELTSWEPTSWERDSWICHSWIFTSWILLSWINESWINGSWINKSWIPESWIRLSWISHSWISSSWIVESWOLNSWOONSWOOPSWORDSWORESWORNSWOWNSWUNGSYCEESYKERSYLPHSYLVASYMARSYNODSYRENSYRMASYRUPSYTHETABBYTABERTABESTABIDTABLETABOOTABORTACETTACHETACITTACKYTAFFYTAFIATAGALTAINTTAIRATAIRNTAKENTAKERTALEDTALESTALLYTALMATALONTALPATALUKTALUSTAMERTAMILTAMISTAMMYTAMULTANAKTANGOTANKATANSYTAPERTAPETTAPIRTAPISTARDOTARDYTAREDTARGETARINTAROTTARRETARRYTARSETARSITASCOTASSETASTETASTOTASTYTATCHTATOUTATTATATTYTAUNTTAWERTAWNYTAXELTAXERTAXISTAXONTAXORTAYRATAZELTAZZATEACHTEADETEARYTEASETECHYTECUMTEDGETEENDTEENSTEENYTEESTTEETHTEINDTEINETEINTTELICTEMPOTEMPSTEMPTTEMSETENCHTENETTENIATENNETENNOTENNUTENONTENORTENSETENTHTEPALTEPEETEPIDTEPORTERCETEREKTERETTERINTERMATERRATERRYTERSETESTATESTETESTYTETELTETTYTEWANTEWEDTEWELTEXASTEYNETHACKTHANATHANETHANKTHAVETHAWYTHECATHEFTTHEGNTHEIRTHEMETHERETHERFTHERMTHESETHETATHEWYTHICKTHIEFTHIGHTHILKTHILLTHINETHINGTHINKTHIRDTHIRLTHOLETHONGTHORNTHOROTHORPTHOSETHOTHTHOWLTHRAWTHREETHREWTHRIDTHROBTHROETHROPTHROWTHRUMTHUJATHULETHUMBTHUMPTHURLTHUYATHYMETHYMYTIARATIBIATICALTIDALTIDDETIDEDTIGERTIGHTTIKORTIKURTIKUSTILDETILERTILIATILTHTIMALTIMERTIMIDTIMURTINCTTINEATINEDTINETTINGETINNYTINTOTIPSYTIREDTIRMATISARTISICTISRITITANTITHETITLETITTYTIVERTOADYTOASTTOBIETOBITTODDYTOFFYTOFUSTOGEDTOGHTTOGUETOHEWTOISETOKAYTOKENTOKINTOLYLTOMANTOMMYTONEDTONGATONGETONGOTONGSTONICTONNETONUSTOOTHTOPAUTOPAZTOPEKTOPERTOPETTOPICTOQUETORAHTORANTORCHTORETTORSETORSKTORSOTORTATORUSTOSSYTOSTOTOTALTOTEMTOTERTOTTYTOUCHTOUGHTOURNTOUSETOUSYTOUZETOWELTOWERTOXICTOXINTOYERTRABUTRACETRACKTRACTTRADETRAILTRAINTRAISTRAITTRAMATRAMPTRANTTRAPETRAPSTRASHTRASSTRAVETRAWLTRAYSTREADTREATTREENTRENDTRESSTREWETREWSTRIADTRIALTRIASTRIBETRICATRICETRICKTRIDETRIEDTRIERTRILLTRINETRINKTRIORTRIPETRISTTRITETROADTROATTROCOTRODETROICTROLLTROMPTRONATRONETROOPTROPETROTHTROULTROUTTROWLTRUBUTRUCETRUCKTRULLTRULYTRUMPTRUNKTRUSSTRUSTTRUTHTRYSTTSEBETUBALTUBBYTUBERTUCANTUCETTUCUMTUDORTUFTYTUGANTULIPTULLETUMIDTUMORTUNERTUNICTUNNYTUPAITUQUETURBOTURFYTURIOTURKOTUSHETUSKYTUTORTUTTITUTTYTWAINTWANGTWANKTWEAGTWEAKTWEEDTWEELTWEERTWICETWILLTWILTTWINETWINKTWIRETWIRLTWISTTWITETYGERTYINGTYLERTYPALTYPICTYRANTYTHEUDDERUHLANUKASEULCERULEMAULLETULMICULMINULMUSULNARULOIDULTRAULULAUMBELUMBERUMBRAUMBREUNAPTUNARMUNBAGUNBARUNBAYUNBEDUNBIDUNBITUNBOWUNBOXUNBOYUNCAPUNCIAUNCLEUNCUSUNCUTUNDAMUNDERUNDIDUNDUEUNETHUNFEDUNFITUNFIXUNGETUNGKAUNGODUNGOTUNHAPUNHATUNIATUNIFYUNIONUNITEUNITYUNKEDUNKLEUNLAPUNLAWUNLAYUNLEDUNMANUNMETUNMEWUNNUNUNOILUNPAYUNPEGUNPENUNPINUNRIGUNRIPUNSADUNSAYUNSETUNSEWUNSEXUNSHYUNSINUNSLYUNTIEUNTILUNWEDUNWETUNWITUPBARUPENDUPHAFUPHERUPLAYUPPERUPRUNUPSETUPSUNUPTIEUPUPAUPYATURALIURAREURARIURATEURBANUREALUREDOURGERURINEURITEURITHURNALURSALURSONURSUKURSUSURUBUUSAGEUSANTUSHERUSNEAUSNICUSUALUSUREUSURPUSURYUTICAUTILEUTTERUVATEUVROUUVULAUZEMAVAGALVAGUEVAGUSVAIRYVALETVALIDVALORVALUEVALVEVAPIDVAPORVARANVARECVARIXVARUSVASTYVASUMVAULTVAUNTVAUTYVEDICVEDROVEERYVEGANVEHMEVEINYVELARVELDTVELUMVENALVENDSVENEWVENEYVENGEVENINVENOMVENUEVENUSVERGEVERSEVERSOVERSTVERTUVERVEVESPAVESTAVETCHVEXEDVEXERVEXILVIAGEVIANDVIARYVICARVICEDVIEWYVIFDAVIGILVIGORVILEDVILLAVILLIVIMENVINEDVINERVINICVINNYVINUMVINYLVIOLAVIOLEVIOXXVIPERVIREOVIRGEVIRGOVIRIDVIRTUVIRUSVISITVISNEVISONVISORVISTAVISTOVITALVITISVITOEVITTAVIVDAVIVESVIVIDVIXENVIZIRVIZORVOCALVODKAVOGLEVOGUEVOICEVOLARVOLGEVOLOWVOLTAVOLTIVOLVAVOMERVOMITVOTERVOUCHVOWELVOWERVOYOLVULVAVYINGWACKEWACKYWADDYWADERWAFERWAGELWAGERWAGESWAGONWAHOOWAIFTWAISTWAIVEWAKENWAKERWAKIFWALERWALTYWALTZWALWEWANDYWANEYWANGOWANLYWANNAWANTYWANZEWAPEDWARESWARLYWARREWARRYWARTYWARYEWASHYWASTEWATCHWATERWAVEDWAVERWAVEYWAXENWAYEDWEALDWEARYWEASYWEAVEWEBBYWEBERWEDERWEDGEWEDGYWEEDYWEELYWEIGHWEIRDWEISMWEIVEWEKAUWELCHWELEWWELSHWELTEWENCHWENDEWENDSWENNYWEPENWERKEWERREWERSTWESILWESTYWEVILWEYLEWEYVEWHAAPWHACKWHALAWHALEWHALLWHAMEWHANGWHARFWHARLWHARPWHAULWHAUPWHEALWHEATWHEELWHEENWHEFTWHELKWHELMWHELPWHEREWHICHWHIFFWHILEWHILKWHINEWHIPTWHIRLWHISKWHISPWHISTWHITEWHOLEWHOOPWHOOTWHOREWHORLWHORTWHOSEWHOSOWHURTWICCAWICKEWIDDYWIDENWIDOWWIDTHWIDWEWIELDWIERYWIGANWIGHTWIKKEWILLYWILNEWILWEWINCEWINCHWINDYWINGYWINZEWIPERWISLYWISSEWITANWITCHWITENWITHEWITHYWITTSWITTYWIVERWIVESWIZENWOALDWODENWOFULWOLDEWOLLEWOMANWOMBYWOMENWOODYWOOERWOOFYWOOLDWOOSYWOOTZWOPENWORDYWORLDWORMYWORRYWORSEWORSTWORTHWOULDWOUNDWOVENWOWKEWOXENWRACKWRATHWRAWLWREAKWRECKWREKEWRESTWRINGWRISTWRITEWRONGWROOTWROTEWROTHWRUNGWUSTEWYTENWYTHEXEBECXENONXENYLXERESXERIFXEROXXVIIIXXIIIXXVIIXYLANXYLEMXYLICXYLOLXYLYLXYRISYACCAYACHTYAGERYAHOOYAHWEYAKINYAKUTYALAHYAMENYAMMAYAPONYARKEYAULPYDRADYEARAYEARNYEASTYEMANYERBAYERNEYERSTYESTYYEVENYEWENYEZDIYFEREYIELDYLIKEYODELYODLEYOJANYOKELYOUNGYOURSYOUTHYOUZEYRAFTYSAMEYUCCAYUCKYYUFTSYULANYUMANYUMASYUMMYYUNCAYUPONYUPPYZACCOZAMANZAMBOZAMIAZANTEZAPASZAYATZEBECZEBRAZEBUBZEMNIZENIKZERDAZESTYZIBETZIEGAZILLAZINKYZIPPYZIZELZOCCOZOCLEZOCORZOHARZOIDEZOISMZOKORZONALZONARZONEDZOOIDZORILZUCHEZULUSZUMICZUNISZYMIC";
+const DICTIONARY = new Set();
+for(let i=0;i<DICT_CONCAT.length;i+=5)DICTIONARY.add(DICT_CONCAT.substr(i,5));
+QUIZZES.forEach(qz=>{if(qz.type==='wordle')qz.questions.forEach(q=>DICTIONARY.add(q.answer.toUpperCase()));});
+function isValidWord(w){return DICTIONARY.has(w.toUpperCase());}
+
+// Admin creds
+const ADMIN_EMAIL="bmohan@provenir.com",ADMIN_PWD_HASH="V2hpdGVmaWVsZA==";
+
+// State
+const WL=5,MA=6;
+let teamName='',isAdmin=false,activeQuiz=-1;
+let curQ=0,score=0,streak=0,curRow=0,curCol=0,curGuess=[],gameOver=false,keyStates={};
+let pool=[],totalQ=0,adminInt=null,teamPollInt=null;
+let currentQuizType='';
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function showToast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),1400);}
+
+// =============================================
+// FIREBASE STORAGE HELPERS
+// =============================================
+async function fbGet(path){
+  try{const snap=await db.ref(path).once('value');return snap.val();}catch(e){console.error('FB get error:',e);return null;}
+}
+async function fbSet(path,val){
+  try{await db.ref(path).set(val);}catch(e){console.error('FB set error:',e);}
+}
+
+async function getActiveQuiz(){return (await fbGet('activeQuiz'))??-1;}
+async function setActiveQuiz(n){await fbSet('activeQuiz',n);}
+
+async function getScores(qi){
+  const data=await fbGet('scores/q'+qi);
+  if(!data)return[];
+  return Object.values(data);
+}
+async function addScore(qi,team,pts){
+  await db.ref('scores/q'+qi).push({team,score:pts,ts:Date.now()});
+}
+
+async function getLocks(qi){
+  const data=await fbGet('locks/q'+qi);
+  if(!data)return[];
+  return Object.values(data);
+}
+async function addLock(qi,team){
+  await db.ref('locks/q'+qi).push(team);
+}
+async function isLocked(qi,team){
+  const locks=await getLocks(qi);
+  return locks.some(t=>t.toLowerCase()===team.toLowerCase());
+}
+
+// =============================================
+// LOGIN
+// =============================================
+const teamInput=document.getElementById('teamNameInput'),aEmail=document.getElementById('adminEmail'),aPwd=document.getElementById('adminPwd');
+document.getElementById('showAdmin').addEventListener('click',()=>{document.getElementById('teamLoginView').classList.add('hidden');document.getElementById('adminLoginView').classList.remove('hidden');});
+document.getElementById('showTeam').addEventListener('click',()=>{document.getElementById('adminLoginView').classList.add('hidden');document.getElementById('teamLoginView').classList.remove('hidden');});
+
+function chkTeam(){document.getElementById('teamLoginBtn').classList.toggle('ready',teamInput.value.trim().length>=2);}
+teamInput.addEventListener('input',()=>{chkTeam();document.getElementById('teamError').classList.remove('show');});
+teamInput.addEventListener('keydown',e=>{if(e.key==='Enter')doTeamLogin();});
+document.getElementById('teamLoginBtn').addEventListener('click',doTeamLogin);
+
+async function doTeamLogin(){
+  const n=teamInput.value.trim();if(n.length<2)return;
+  document.getElementById('teamError').classList.remove('show');
+  teamName=n;isAdmin=false;
+  document.getElementById('loginScreen').classList.add('hidden');
+  checkForActiveQuiz();
+}
+
+function chkAdmin(){document.getElementById('adminLoginBtn').classList.toggle('ready',aEmail.value.trim().length>3&&aPwd.value.length>0);}
+aEmail.addEventListener('input',()=>{chkAdmin();document.getElementById('adminError').classList.remove('show');});
+aPwd.addEventListener('input',()=>{chkAdmin();document.getElementById('adminError').classList.remove('show');});
+aPwd.addEventListener('keydown',e=>{if(e.key==='Enter')doAdminLogin();});
+document.getElementById('adminLoginBtn').addEventListener('click',doAdminLogin);
+
+function doAdminLogin(){
+  if(aEmail.value.trim().toLowerCase()!==ADMIN_EMAIL||btoa(aPwd.value)!==ADMIN_PWD_HASH){document.getElementById('adminError').textContent='❌ Invalid credentials.';document.getElementById('adminError').classList.add('show');return;}
+  isAdmin=true;document.getElementById('loginScreen').classList.add('hidden');document.getElementById('adminScreen').classList.remove('hidden');
+  refreshAdmin();adminInt=setInterval(refreshAdmin,5000);
+}
+
+// =============================================
+// TEAM: Check for active quiz
+// =============================================
+async function checkForActiveQuiz(){
+  const aq=await getActiveQuiz();
+  if(aq<0||aq>=QUIZZES.length){
+    document.getElementById('waitScreen').classList.remove('hidden');document.getElementById('gameScreen').classList.add('hidden');
+    document.getElementById('waitTitle').textContent='Hang Tight!';
+    document.getElementById('waitMsg').innerHTML='No quiz is active right now.<br>The host will start the next round shortly.';
+    document.getElementById('waitTeam').textContent=teamName;
+    if(teamPollInt)clearInterval(teamPollInt);
+    teamPollInt=setInterval(checkForActiveQuiz,3000);
+  }else{
+    if(teamPollInt)clearInterval(teamPollInt);
+    document.getElementById('waitScreen').classList.add('hidden');
+    if(await isLocked(aq,teamName)){
+      document.getElementById('waitScreen').classList.remove('hidden');
+      document.getElementById('waitTitle').textContent='Already Played!';
+      document.getElementById('waitMsg').innerHTML='Your team has already completed this quiz.<br>Wait for the next round.';
+      if(teamPollInt)clearInterval(teamPollInt);
+      teamPollInt=setInterval(checkForActiveQuiz,3000);
+      return;
+    }
+    await addLock(aq,teamName);
+    startQuiz(aq);
+  }
+}
+
+function startQuiz(qi){
+  activeQuiz=qi;
+  const qz=QUIZZES[qi];currentQuizType=qz.type;
+  document.getElementById('gameScreen').classList.remove('hidden');
+  document.getElementById('pbName').textContent=teamName;
+  document.getElementById('qBadge').textContent=qz.name+' — '+(qz.type==='mcq'?'MCQ':'WORDLE');
+  pool=shuffle(qz.questions);totalQ=pool.length;
+  curQ=0;score=0;streak=0;
+  if(qz.type==='mcq'){document.getElementById('mcqMode').classList.remove('hidden');document.getElementById('wordleMode').classList.add('hidden');}
+  else{document.getElementById('wordleMode').classList.remove('hidden');document.getElementById('mcqMode').classList.add('hidden');}
+  loadQ();
+}
+
+// =============================================
+// GAME
+// =============================================
+function updateStats(){document.getElementById('score').textContent=score;document.getElementById('streak').textContent=streak;document.getElementById('qcount').textContent=Math.min(curQ+1,totalQ)+'/'+totalQ;}
+
+function loadQ(){
+  if(curQ>=totalQ){showEnd();return;}
+  updateStats();document.getElementById('nextBtn').classList.remove('show');
+  document.getElementById('mcqMsg').classList.remove('show');document.getElementById('wordleMsg').classList.remove('show');
+  const q=pool[curQ];
+  document.getElementById('qNumber').textContent='Round '+(curQ+1)+' of '+totalQ;
+  if(currentQuizType==='mcq'){document.getElementById('qText').textContent=q.q;document.getElementById('qHint').textContent='';loadMCQ(q);}
+  else{document.getElementById('qText').textContent=q.question;document.getElementById('qHint').textContent='5 letters • Only valid words accepted';loadWordle();}
+}
+
+// MCQ
+function loadMCQ(q){
+  const opts=document.getElementById('mcqOpts');opts.innerHTML='';
+  ['A','B','C','D'].forEach((l,i)=>{
+    const btn=document.createElement('button');btn.className='mcq-btn';
+    btn.innerHTML='<span class="ml">'+l+'</span><span>'+esc(q.opts[i])+'</span>';
+    btn.addEventListener('click',()=>handleMCQ(i,q));opts.appendChild(btn);
+  });
+}
+function handleMCQ(picked,q){
+  const btns=document.getElementById('mcqOpts').querySelectorAll('.mcq-btn');
+  btns.forEach(b=>b.classList.add('locked'));
+  if(picked===q.ans){btns[picked].classList.add('correct-pick');score+=10;streak++;document.getElementById('mcqMsg').textContent='✅ Correct! +10 pts — '+q.explain;document.getElementById('mcqMsg').className='msg win show';}
+  else{btns[picked].classList.add('wrong-pick');btns[q.ans].classList.add('reveal-correct');streak=0;document.getElementById('mcqMsg').textContent='❌ '+q.explain;document.getElementById('mcqMsg').className='msg lose show';}
+  updateStats();document.getElementById('nextBtn').classList.add('show');
+}
+
+// Wordle
+function loadWordle(){
+  curRow=0;curCol=0;curGuess=[];gameOver=false;keyStates={};
+  const g=document.getElementById('wordleGrid');g.innerHTML='';
+  for(let r=0;r<MA;r++){const row=document.createElement('div');row.className='wrow';row.id='row-'+r;for(let c=0;c<WL;c++){const cell=document.createElement('div');cell.className='wc';cell.id='cell-'+r+'-'+c;row.appendChild(cell);}g.appendChild(row);}
+  document.querySelectorAll('.key').forEach(k=>{k.className='key'+(k.textContent.length>1?' wide':'');});
+}
+function handleKey(key){
+  if(gameOver||currentQuizType!=='wordle')return;
+  if(key==='BACKSPACE'||key==='⌫'){if(curCol>0){curCol--;curGuess.pop();const c=document.getElementById('cell-'+curRow+'-'+curCol);c.textContent='';c.classList.remove('filled');}}
+  else if(key==='ENTER'){if(curCol===WL)submitWordle();}
+  else if(/^[A-Z]$/.test(key)&&curCol<WL){curGuess.push(key);const c=document.getElementById('cell-'+curRow+'-'+curCol);c.textContent=key;c.classList.add('filled');curCol++;}
+}
+function submitWordle(){
+  const guess=curGuess.join('');
+  if(!isValidWord(guess)){const row=document.getElementById('row-'+curRow);row.classList.remove('shake');void row.offsetWidth;row.classList.add('shake');showToast('Not in word list');return;}
+  const answer=pool[curQ].answer.toUpperCase();
+  const states=new Array(WL).fill('absent'),aA=answer.split(''),gA=guess.split(''),used=new Array(WL).fill(false);
+  for(let i=0;i<WL;i++){if(gA[i]===aA[i]){states[i]='correct';used[i]=true;}}
+  for(let i=0;i<WL;i++){if(states[i]!=='correct'){for(let j=0;j<WL;j++){if(!used[j]&&gA[i]===aA[j]){states[i]='present';used[j]=true;break;}}}}
+  for(let i=0;i<WL;i++){const cell=document.getElementById('cell-'+curRow+'-'+i);setTimeout(()=>{cell.className='wc '+states[i];},i*120);const l=gA[i];if(!keyStates[l]||states[i]==='correct'||(states[i]==='present'&&keyStates[l]!=='correct'))keyStates[l]=states[i];}
+  setTimeout(()=>{document.querySelectorAll('.key').forEach(k=>{const l=k.textContent.toUpperCase();if(keyStates[l])k.classList.add(keyStates[l]);});},WL*120+100);
+  if(guess===answer){gameOver=true;const pts=Math.max(10,60-curRow*10);score+=pts;streak++;setTimeout(()=>{document.getElementById('wordleMsg').textContent='🎉 Correct! +'+pts+' pts (attempt '+(curRow+1)+'/'+MA+')';document.getElementById('wordleMsg').className='msg win show';document.getElementById('nextBtn').classList.add('show');updateStats();},WL*120+200);}
+  else{curRow++;curCol=0;curGuess=[];if(curRow>=MA){gameOver=true;streak=0;setTimeout(()=>{document.getElementById('wordleMsg').textContent='The answer was: '+answer;document.getElementById('wordleMsg').className='msg lose show';document.getElementById('nextBtn').classList.add('show');updateStats();},WL*120+200);}}
+}
+
+document.getElementById('nextBtn').addEventListener('click',()=>{curQ++;const qc=document.getElementById('questionCard');qc.style.animation='none';qc.offsetHeight;qc.style.animation='';loadQ();});
+
+async function showEnd(){
+  document.getElementById('questionCard').style.display='none';
+  document.getElementById('wordleMode').classList.add('hidden');document.getElementById('mcqMode').classList.add('hidden');
+  document.getElementById('nextBtn').classList.remove('show');
+  document.getElementById('finalScore').textContent=score;document.getElementById('endTeam').textContent='Team: '+teamName;
+  const pct=score/(totalQ*(currentQuizType==='mcq'?10:60));
+  const h2=document.getElementById('endTitle');
+  if(pct>=0.8)h2.textContent='Absolute Legends! 🔥';else if(pct>=0.5)h2.textContent='Well Played! 👏';else h2.textContent='Better Luck Next Time!';
+  document.getElementById('endScreen').classList.add('show');
+  await addScore(activeQuiz,teamName,score);
+}
+
+// =============================================
+// ADMIN
+// =============================================
+document.getElementById('adminLogout').addEventListener('click',()=>{clearInterval(adminInt);document.getElementById('adminScreen').classList.add('hidden');document.getElementById('loginScreen').classList.remove('hidden');document.getElementById('adminLoginView').classList.add('hidden');document.getElementById('teamLoginView').classList.remove('hidden');aEmail.value='';aPwd.value='';});
+document.getElementById('adminRefresh').addEventListener('click',refreshAdmin);
+
+document.getElementById('quizGrid').addEventListener('click',async e=>{
+  const card=e.target.closest('.quiz-card');if(!card)return;
+  const qi=parseInt(card.dataset.quiz);
+  await setActiveQuiz(qi);refreshAdmin();showToast(QUIZZES[qi].name+' is now LIVE!');
+});
+
+document.getElementById('adminDeactivate').addEventListener('click',async()=>{await setActiveQuiz(-1);refreshAdmin();showToast('Quiz deactivated');});
+document.getElementById('adminResetScores').addEventListener('click',async()=>{if(!confirm('Reset scores for ALL quizzes?'))return;await fbSet('scores',null);refreshAdmin();showToast('All scores cleared');});
+document.getElementById('adminResetLocks').addEventListener('click',async()=>{if(!confirm('Unlock ALL teams for ALL quizzes?'))return;await fbSet('locks',null);refreshAdmin();showToast('All locks cleared');});
+document.getElementById('adminFullReset').addEventListener('click',async()=>{if(!confirm('⚠️ FULL RESET: Scores + Locks + Deactivate?'))return;await fbSet('/',{activeQuiz:-1});refreshAdmin();showToast('Full reset done');});
+
+async function refreshAdmin(){
+  const aq=await getActiveQuiz();
+  document.querySelectorAll('.quiz-card').forEach(c=>{c.classList.toggle('active',parseInt(c.dataset.quiz)===aq);});
+  const qi=aq>=0?aq:0;
+  const entries=await getScores(qi);
+  const qzName=aq>=0?QUIZZES[aq].name:'No Quiz Active';
+  document.getElementById('adminStatTitle').textContent='📊 '+qzName+(aq>=0?' — Stats':'');
+  document.getElementById('aPlayed').textContent=entries.length;
+  document.getElementById('aTop').textContent=entries.length?Math.max(...entries.map(e=>e.score)):0;
+  document.getElementById('aAvg').textContent=entries.length?Math.round(entries.reduce((s,e)=>s+e.score,0)/entries.length):0;
+  document.getElementById('lbQuizLabel').textContent=aq>=0?QUIZZES[aq].name:'—';
+  const body=document.getElementById('adminLb');
+  if(!entries.length){body.innerHTML='<div class="lbe">No scores yet.</div>';return;}
+  entries.sort((a,b)=>b.score-a.score||a.ts-b.ts);
+  body.innerHTML=entries.map((e,i)=>{
+    const rc=i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    const m=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    const t=getTA(e.ts);
+    return '<div class="lr '+(i===0?'top1':'')+'"><div class="lrk '+rc+'">'+m+'</div><div class="lri"><div class="lrn">'+esc(e.team)+'</div><div class="lrm">'+t+'</div></div><div class="lrs">'+e.score+' <span class="lrp">pts</span></div></div>';
+  }).join('');
+}
+function getTA(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return'just now';const m=Math.floor(s/60);if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
+
+// Keyboard
+document.getElementById('keyboard').addEventListener('click',e=>{if(!e.target.classList.contains('key'))return;const t=e.target.textContent.toUpperCase();if(t==='⌫')handleKey('BACKSPACE');else if(t==='ENTER')handleKey('ENTER');else handleKey(t);});
+document.addEventListener('keydown',e=>{if(gameOver||document.activeElement===teamInput||document.activeElement===aEmail||document.activeElement===aPwd)return;const k=e.key.toUpperCase();if(k==='BACKSPACE'||k==='ENTER'){e.preventDefault();handleKey(k);}else if(/^[A-Z]$/.test(k))handleKey(k);});
+</script>
+</body>
+</html>

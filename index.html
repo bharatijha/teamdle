@@ -667,7 +667,11 @@ async function renderAnswerKey(){
   const letters=['A','B','C','D'];
   body.innerHTML=qz.questions.map((q,i)=>{
     if(qz.type==='mcq'){
-      return '<div class="ak-item"><div class="ak-qnum">Q'+(i+1)+'</div><div class="ak-question">'+esc(q.q)+'</div><div class="ak-correct">✅ '+letters[q.ans]+') '+esc(q.opts[q.ans])+'</div><div class="ak-explain">💬 '+esc(q.explain)+'</div></div>';
+      const optsHtml=q.opts.map((o,j)=>{
+        const isCorrect=j===q.ans;
+        return '<div style="padding:6px 12px;margin:4px 0;border-radius:6px;font-size:13px;border:1px solid '+(isCorrect?'var(--teal)':'var(--bdr)')+';background:'+(isCorrect?'rgba(0,199,177,.12)':'transparent')+';color:'+(isCorrect?'var(--teal)':'var(--gray)')+';">'+(isCorrect?'✅ ':'')+letters[j]+') '+esc(o)+'</div>';
+      }).join('');
+      return '<div class="ak-item"><div class="ak-qnum">Q'+(i+1)+'</div><div class="ak-question">'+esc(q.q)+'</div>'+optsHtml+'<div class="ak-explain">💬 '+esc(q.explain)+'</div></div>';
     }else{
       return '<div class="ak-item"><div class="ak-qnum">Q'+(i+1)+'</div><div class="ak-question">'+esc(q.question)+'</div><div class="ak-correct">✅ '+q.answer+'</div></div>';
     }

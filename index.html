@@ -160,6 +160,13 @@ header .sub{font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;
 .key{min-width:27px;height:42px;font-size:11px}.key.wide{min-width:48px;font-size:9px}
 .quiz-grid{grid-template-columns:1fr}.asgrid{grid-template-columns:1fr 1fr}
 }
+
+/* Answer Key */
+.ak-item{background:var(--nav2);border:1px solid var(--bdr);border-radius:10px;padding:16px;margin-bottom:10px}
+.ak-qnum{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--teal);text-transform:uppercase;margin-bottom:6px}
+.ak-question{font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.5}
+.ak-correct{display:inline-block;padding:6px 14px;background:rgba(0,199,177,.12);border:1px solid rgba(0,199,177,.25);border-radius:6px;color:var(--teal);font-weight:700;font-size:13px;margin-bottom:8px}
+.ak-explain{font-size:12px;color:var(--gold);font-style:italic;line-height:1.5}
 </style>
 </head>
 <body>
@@ -272,6 +279,7 @@ header .sub{font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;
     <button class="abtn danger" id="adminResetScores">🗑️ Reset Scores</button>
     <button class="abtn danger" id="adminResetLocks">🔓 Reset Team Locks</button>
     <button class="abtn danger" id="adminFullReset">💣 Full Reset</button>
+    <button class="abtn" id="adminShowAnswers" style="border-color:var(--gold);color:var(--gold)">📋 Show Answer Key</button>
   </div>
   <div class="astat">
     <h3 id="adminStatTitle">📊 No Quiz Active</h3>
@@ -281,6 +289,13 @@ header .sub{font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;
       <div class="asc"><div class="n" id="aAvg">0</div><div class="l">Avg Score</div></div>
     </div>
   </div>
+
+  <!-- Answer Key (hidden by default, toggled by admin) -->
+  <div class="lbs hidden" id="answerKeySection">
+    <div class="lbs-h" style="color:var(--gold)">📋 Answer Key <span id="akQuizLabel" style="font-weight:400;color:var(--gray);margin-left:8px">—</span></div>
+    <div class="lbb" id="answerKeyBody" style="max-height:70vh"><div class="lbe">Select a quiz to see answers.</div></div>
+  </div>
+
   <div class="lbs">
     <div class="lbs-h">🏆 Leaderboard <span id="lbQuizLabel" style="font-weight:400;color:var(--gray);margin-left:8px">—</span></div>
     <div class="lbb" id="adminLb"><div class="lbe">No scores yet.</div></div>
@@ -288,11 +303,14 @@ header .sub{font-size:11px;color:var(--gray);font-family:'Space Mono',monospace;
 </div>
 
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
 // Firebase Config
+if(typeof firebase==='undefined'){
+  document.body.innerHTML='<div style="text-align:center;padding:60px 20px;color:#ef4444;font-family:sans-serif"><h2>⚠️ Failed to load Firebase</h2><p style="color:#7a8ba8;margin-top:12px">Check your internet connection and refresh the page.</p></div>';
+}else{
 firebase.initializeApp({
   apiKey: "AIzaSyAwTfCBWGzMG2aGqGj3ZhI0hzHSc1k6b4Q",
   authDomain: "teamdle.firebaseapp.com",
@@ -311,16 +329,16 @@ const QUIZZES = [
   {
     name: "Quiz 1", type: "mcq",
     questions: [
-      {q:"A customer's environment is down. Who does CS escalate to FIRST?",opts:["Engineering","DevOps","Professional Services","Analytics"],ans:1,explain:"Environment issues go to DevOps first."},
-      {q:"After PS completes go-live, who receives the handover package?",opts:["Sales","QA","Customer Support","Engineering"],ans:2,explain:"CS takes over BAU after PS hands off."},
-      {q:"A bug is reproducible across ALL environments. What type of issue is this?",opts:["Environment Issue","Config Issue","Engineering Issue","Documentation Issue"],ans:2,explain:"Reproducible everywhere = code-level bug."},
-      {q:"Who provides usage data to help Marketing identify customers for case studies?",opts:["Sales","Analytics","HR","DevOps"],ans:1,explain:"Analytics surfaces insights to Marketing."},
-      {q:"During onboarding, who creates customer-specific admin guides?",opts:["QA","Engineering","Documentation","IT"],ans:2,explain:"Documentation team creates runbooks and guides."},
-      {q:"Which team helps isolate root cause with usage data when perf degrades?",opts:["HR","Sales","Analytics","Payroll"],ans:2,explain:"Analytics provides data to isolate the cause."},
-      {q:"In the escalation ladder, what comes after L2 Support?",opts:["War Room","Engineering (L3)","Sales Escalation","Exec Review"],ans:1,explain:"L2 escalates to Engineering (L3)."},
-      {q:"Which team provisions internal tools, VPN, and SSO?",opts:["DevOps","IT","HR","Engineering"],ans:1,explain:"IT handles internal tooling and access."},
-      {q:"Config leads to unexpected behavior. Who investigates first?",opts:["Engineering","DevOps","Professional Services","QA"],ans:2,explain:"Config issues go to PS first."},
-      {q:"What triggers the handoff from Sales to DevOps for a new customer?",opts:["Email from CEO","Slack message","A provisioning ticket","Phone call"],ans:2,explain:"Sales raises a formal provisioning ticket."},
+      {q:"What's the most-used phrase in any Teams call?",opts:["Great presentation!","You're on mute","Let's circle back","Can everyone see my screen?"],ans:1,explain:"If 'You're on mute' had royalties, we'd all be rich."},
+      {q:"Your camera is off in a Teams meeting. What are you actually doing?",opts:["Taking detailed notes","Making Maggi","In another meeting","All of the above"],ans:3,explain:"Camera off = Schrödinger's employee. Simultaneously in 3 meetings and 0 meetings."},
+      {q:"A colleague messages \"Hi\" on Teams and nothing else. What's the correct response?",opts:["Hi! How are you?","Panic — they're about to assign work","Wait 3 hours and reply 'Hey, sorry just saw this'","Google 'how to appear offline on Teams'"],ans:1,explain:"A naked 'Hi' on Teams is the corporate equivalent of 'We need to talk.'"},
+      {q:"What does \"flexible working hours\" actually mean in practice?",opts:["Start at 10, finish at 6","You're flexible enough to work ALL hours","Meetings from 9 AM to 9 PM across time zones","B and C"],ans:3,explain:"Flexible = you're always available, just from your couch."},
+      {q:"The doorbell rings during your important client call. Who is it?",opts:["Amazon delivery","Gas cylinder guy","Society maintenance asking about parking","It's always Amazon delivery"],ans:3,explain:"Amazon delivery has a sixth sense for important meetings."},
+      {q:"What is the WFH equivalent of controlling the office AC?",opts:["Having admin access to the Teams workspace","Being the meeting organizer who can mute everyone","Having the best internet connection in the house","Being the one who decides the Swiggy order for team lunch"],ans:1,explain:"The 'Mute All' button is the ultimate remote power move."},
+      {q:"Someone says \"Let's do a quick sync\" at 5:45 PM on Friday. What do you do?",opts:["Join enthusiastically","Suddenly have internet issues","Set Teams status to 🔴 Busy","Reply 'Sure!' then join 15 min late hoping it's over"],ans:1,explain:"Jio and Airtel have never had more 'outages' than on Friday evenings."},
+      {q:"How many Teams channels are you in that you've permanently hidden?",opts:["2-5","10-20","You've lost count","You hide them faster than people create them"],ans:3,explain:"Hiding Teams channels is the true core skill of remote work."},
+      {q:"Your \"commute\" to work now consists of:",opts:["Bedroom to living room (5 steps)","Bed to slightly more upright position in bed","Logging in from the same chair you had dinner on","Opening the laptop that never actually closed"],ans:3,explain:"The laptop hasn't been shut since onboarding day."},
+      {q:"Your manager sends a Teams message at 10 PM: \"Not urgent, but when you get a chance...\" When does she actually expect a reply?",opts:["Tomorrow morning","Within the next 10 minutes","She's already typing a follow-up","You're already behind"],ans:1,explain:"'Not urgent' after 10 PM is the most urgent thing that has ever existed."},
     ]
   },
   {
@@ -526,8 +544,17 @@ function loadMCQ(q){
 function handleMCQ(picked,q){
   const btns=document.getElementById('mcqOpts').querySelectorAll('.mcq-btn');
   btns.forEach(b=>b.classList.add('locked'));
-  if(picked===q.ans){btns[picked].classList.add('correct-pick');score+=10;streak++;document.getElementById('mcqMsg').textContent='✅ Correct! +10 pts — '+q.explain;document.getElementById('mcqMsg').className='msg win show';}
-  else{btns[picked].classList.add('wrong-pick');btns[q.ans].classList.add('reveal-correct');streak=0;document.getElementById('mcqMsg').textContent='❌ '+q.explain;document.getElementById('mcqMsg').className='msg lose show';}
+  if(picked===q.ans){
+    btns[picked].classList.add('correct-pick');
+    score+=10;streak++;
+    document.getElementById('mcqMsg').textContent='✅ Correct! +10 pts';
+    document.getElementById('mcqMsg').className='msg win show';
+  }else{
+    btns[picked].classList.add('wrong-pick');
+    streak=0;
+    document.getElementById('mcqMsg').textContent='❌ Wrong answer!';
+    document.getElementById('mcqMsg').className='msg lose show';
+  }
   updateStats();document.getElementById('nextBtn').classList.add('show');
 }
 
@@ -611,9 +638,47 @@ async function refreshAdmin(){
 }
 function getTA(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return'just now';const m=Math.floor(s/60);if(m<60)return m+'m ago';const h=Math.floor(m/60);if(h<24)return h+'h ago';return Math.floor(h/24)+'d ago';}
 
+// Answer Key
+let akVisible=false;
+document.getElementById('adminShowAnswers').addEventListener('click',async()=>{
+  akVisible=!akVisible;
+  const section=document.getElementById('answerKeySection');
+  const btn=document.getElementById('adminShowAnswers');
+  if(akVisible){
+    section.classList.remove('hidden');
+    btn.textContent='🙈 Hide Answer Key';
+    renderAnswerKey();
+  }else{
+    section.classList.add('hidden');
+    btn.textContent='📋 Show Answer Key';
+  }
+});
+
+async function renderAnswerKey(){
+  const aq=await getActiveQuiz();
+  const body=document.getElementById('answerKeyBody');
+  const label=document.getElementById('akQuizLabel');
+  if(aq<0){body.innerHTML='<div class="lbe">No quiz active. Select a quiz first.</div>';label.textContent='—';return;}
+  const qz=QUIZZES[aq];
+  label.textContent=qz.name+' — '+(qz.type==='mcq'?'MCQ':'WORDLE');
+  const letters=['A','B','C','D'];
+  body.innerHTML=qz.questions.map((q,i)=>{
+    if(qz.type==='mcq'){
+      return '<div class="ak-item"><div class="ak-qnum">Q'+(i+1)+'</div><div class="ak-question">'+esc(q.q)+'</div><div class="ak-correct">✅ '+letters[q.ans]+') '+esc(q.opts[q.ans])+'</div><div class="ak-explain">💬 '+esc(q.explain)+'</div></div>';
+    }else{
+      return '<div class="ak-item"><div class="ak-qnum">Q'+(i+1)+'</div><div class="ak-question">'+esc(q.question)+'</div><div class="ak-correct">✅ '+q.answer+'</div></div>';
+    }
+  }).join('');
+}
+
+// Also refresh answer key when quiz changes
+const origRefresh=refreshAdmin;
+refreshAdmin=async function(){await origRefresh();if(akVisible)renderAnswerKey();};
+
 // Keyboard
 document.getElementById('keyboard').addEventListener('click',e=>{if(!e.target.classList.contains('key'))return;const t=e.target.textContent.toUpperCase();if(t==='⌫')handleKey('BACKSPACE');else if(t==='ENTER')handleKey('ENTER');else handleKey(t);});
 document.addEventListener('keydown',e=>{if(gameOver||document.activeElement===teamInput||document.activeElement===aEmail||document.activeElement===aPwd)return;const k=e.key.toUpperCase();if(k==='BACKSPACE'||k==='ENTER'){e.preventDefault();handleKey(k);}else if(/^[A-Z]$/.test(k))handleKey(k);});
+} // end firebase else block
 </script>
 </body>
 </html>
